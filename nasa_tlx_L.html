@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Procjena radnog opterećenja (NASA-TLX)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .nasa-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 850px;
+      width: 100%;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .intro {
+      font-size: 14px;
+      color: #7f8c8d;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .progress {
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    .question {
+      margin-bottom: 30px;
+      padding-bottom: 22px;
+      border-bottom: 2px solid #ecf0f1;
+    }
+
+    .question:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+
+    .question-description {
+      font-size: 16px;
+      color: #7f8c8d;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+   .range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* fiksna širina krajnjih labela */
+.range-end {
+  width: 120px;          /* KLJUČNO */
+  font-size: 15px;
+  color: #7f8c8d;
+  font-style: italic;
+  white-space: normal;  /* dopušta prijelom teksta */
+  line-height: 1.3;
+}
+
+/* poravnanje */
+.range-end:first-child { text-align: left; }
+.range-end:last-child  { text-align: right; }
+
+/* slider uvijek zauzima sredinu */
+.range-input{
+  flex: 1;
+}
+
+    /* Jednobojni track (bez plavog fill-a) */
+    .range-input{
+      flex:1;
+      -webkit-appearance:none;
+      appearance:none;
+      height:10px;
+      background:#d5dadd;
+      border-radius:999px;
+      outline:none;
+      cursor:pointer;
+    }
+
+    .range-input::-webkit-slider-runnable-track{
+      height:10px;
+      background:#d5dadd;
+      border-radius:999px;
+    }
+
+    .range-input::-webkit-slider-thumb{
+      -webkit-appearance:none;
+      appearance:none;
+      width:22px;
+      height:22px;
+      background:#34495e;
+      border-radius:50%;
+      border:3px solid #ffffff;
+      box-shadow:0 2px 8px rgba(0,0,0,0.18);
+      margin-top:-6px;
+      cursor:pointer;
+    }
+
+    .range-input::-moz-range-track{
+      height:10px;
+      background:#d5dadd;
+      border-radius:999px;
+    }
+
+    .range-input::-moz-range-thumb{
+      width:22px;
+      height:22px;
+      background:#34495e;
+      border-radius:50%;
+      border:3px solid #ffffff;
+      box-shadow:0 2px 8px rgba(0,0,0,0.18);
+      cursor:pointer;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 14px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .submit-button:hover { background-color: #2980b9; }
+
+    .submit-button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .submit-button.success { background-color: #27ae60; }
+  </style>
+</head>
+
+<body>
+  <div class="nasa-container">
+    <div class="progress" id="progress">Odgovoreno 0/6</div>
+
+    <div class="title">Procjena radnog opterećenja (NASA-TLX)</div>
+    <div class="intro">
+      Molimo Vas da ocijenite iskustvo zadataka s radarskim slikama koje ste upravo završili.
+      Označite razinu opterećenja za svaku od šest ponuđenih dimenzija pomicanjem klizača (<em>slidera</em>)
+      na odgovarajuće mjesto.
+    </div>
+
+    <form id="nasaForm">
+      <!-- 1 -->
+      <div class="question">
+        <div class="question-text">1. Mentalni zahtjev</div>
+        <div class="question-description">
+          Koliko je mentalne i misaone aktivnosti bilo potrebno? (npr. razmišljanje, odlučivanje, pamćenje, gledanje, traženje ciljeva na radarskoj slici)
+        </div>
+
+        <div class="slider-row">
+          <div class="range-row">
+            <span class="range-end">Vrlo nisko</span>
+            <input class="range-input" type="range" name="q1" min="0" max="20" step="1" value="10" id="q1" />
+            <span class="range-end">Vrlo visoko</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="question">
+        <div class="question-text">2. Fizički zahtjev</div>
+        <div class="question-description">
+          Koliko je fizičke aktivnosti bilo potrebno? (npr. pokreti ruku, kontrola miša, položaj tijela, zamor očiju)
+        </div>
+
+        <div class="slider-row">
+          <div class="range-row">
+            <span class="range-end">Vrlo nisko</span>
+            <input class="range-input" type="range" name="q2" min="0" max="20" step="1" value="10" id="q2" />
+            <span class="range-end">Vrlo visoko</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="question">
+        <div class="question-text">3. Vremenski zahtjev</div>
+        <div class="question-description">
+          Koliki ste vremenski pritisak osjećali zbog tempa kojim su se pojavljivali zadaci ili podaci na radarskim slikama?
+          Je li tempo bio spor/lagan ili brz/naporan?
+        </div>
+
+        <div class="slider-row">
+          <div class="range-row">
+            <span class="range-end">Vrlo nisko</span>
+            <input class="range-input" type="range" name="q3" min="0" max="20" step="1" value="10" id="q3" />
+            <span class="range-end">Vrlo visoko</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="question">
+        <div class="question-text">4. Uspješnost</div>
+        <div class="question-description">
+          Koliko ste zadovoljni s vlastitom uspješnoću pri uočavanju i interpretaciji podataka na radarskim slikama?
+        </div>
+
+        <div class="slider-row">
+          <div class="range-row">
+            <span class="range-end">Savršeno</span>
+            <input class="range-input" type="range" name="q4" min="0" max="20" step="1" value="10" id="q4" />
+            <span class="range-end">Potpuni neuspjeh</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="question">
+        <div class="question-text">5. Uloženi trud</div>
+        <div class="question-description">
+          Koliko ste truda mentalno i fizički) morali uložiti da biste postigli trenutnu razinu uspješnosti?
+        </div>
+
+        <div class="slider-row">
+          <div class="range-row">
+            <span class="range-end">Vrlo nisko</span>
+            <input class="range-input" type="range" name="q5" min="0" max="20" step="1" value="10" id="q5" />
+            <span class="range-end">Vrlo visoko</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="question">
+        <div class="question-text">6. Frustracija</div>
+        <div class="question-description">
+          Koliko ste se tijekom rješavanja zadatka osjećali nesigurno, obeshrabreno, iritirano, pod stresom ili uznemireno?
+        </div>
+
+        <div class="slider-row">
+          <div class="range-row">
+            <span class="range-end">Vrlo nisko</span>
+            <input class="range-input" type="range" name="q6" min="0" max="20" step="1" value="10" id="q6" />
+            <span class="range-end">Vrlo visoko</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-button" id="submitBtn" disabled>Nastavi</button>
+    </form>
+  </div>
+
+<script>
+  const TRIAL_START = Date.now();
+  const urlParams = new URLSearchParams(window.location.search);
+  const trial = urlParams.get('trial') || 'unknown';
+  const trialGroupId = localStorage.getItem('trialGroupId') || null;
+
+  // bilježimo da je korisnik stvarno pomaknuo slider (početna vrijednost je sredina, ali se ne računa kao odgovor dok ga ne pomakne)
+  const answeredMap = { q1:false, q2:false, q3:false, q4:false, q5:false, q6:false };
+
+  function updateProgress() {
+    const answered = Object.values(answeredMap).filter(Boolean).length;
+    document.getElementById('progress').textContent = `Odgovoreno ${answered}/6`;
+    document.getElementById('submitBtn').disabled = (answered !== 6);
+  }
+
+  function bindSlider(id, qKey) {
+    const slider = document.getElementById(id);
+
+    slider.addEventListener('change', function () {
+      answeredMap[qKey] = true;
+      updateProgress();
+    });
+  }
+
+  bindSlider('q1', 'q1');
+  bindSlider('q2', 'q2');
+  bindSlider('q3', 'q3');
+  bindSlider('q4', 'q4');
+  bindSlider('q5', 'q5');
+  bindSlider('q6', 'q6');
+
+  updateProgress();
+
+  document.getElementById('nasaForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Spremanje...";
+    submitBtn.classList.add('success');
+
+    const data = {
+      trial: trial,
+      type: 'NASA_TLX',
+      tlxBlock: 'LOW',
+      trialGroupId: trialGroupId,
+
+      mentalDemand: parseInt(document.getElementById('q1').value, 10),
+      physicalDemand: parseInt(document.getElementById('q2').value, 10),
+      temporalDemand: parseInt(document.getElementById('q3').value, 10),
+      performance: parseInt(document.getElementById('q4').value, 10),
+      effort: parseInt(document.getElementById('q5').value, 10),
+      frustration: parseInt(document.getElementById('q6').value, 10),
+
+      responseTime: Date.now() - TRIAL_START,
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      let allData = [];
+      const storedData = localStorage.getItem('experimentData');
+
+      if (storedData) {
+        allData = JSON.parse(storedData);
+        if (!Array.isArray(allData)) allData = [];
+      }
+
+      allData.push(data);
+      localStorage.setItem('experimentData', JSON.stringify(allData));
+      console.log('NASA-TLX LOW spremljen:', data);
+
+    } catch (error) {
+      console.error('Greška pri spremanju:', error);
+      localStorage.setItem('experimentData', JSON.stringify([data]));
+    }
+
+    setTimeout(function () {
+      localStorage.setItem('lastBlockCompleted', 'LOW');
+      localStorage.setItem('lowDone', '1');
+      window.location.href = 'pauza.html';
+    }, 500);
+  });
+</script>
+</body>
+</html>

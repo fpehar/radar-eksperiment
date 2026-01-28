@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L1 Zadatak - DHMZ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* LIJEVI STUPAC */
+        .question-wrapper {
+            flex: 0 0 380px; 
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            z-index: 10;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .question-container {
+            width: 100%;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-text {
+            font-size: 17px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .answer-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: white;
+        }
+
+        .answer-option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+        }
+
+        .answer-option input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .answer-option label {
+            font-size: 15px;
+            color: #2c3e50;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .answer-option.selected {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+        }
+
+        .submit-button {
+            padding: 12px 30px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .submit-button:hover {
+            background-color: #2980b9;
+        }
+
+        .submit-button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        /* Klasa za uspješno spremanje (zeleni gumb) */
+        .submit-button.success {
+            background-color: #27ae60;
+            pointer-events: none;
+        }
+
+        /* DESNI STUPAC - KARTA */
+        .image-wrapper {
+            flex: 1; 
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            overflow: hidden;
+            position: relative;
+            padding: 0;
+        }
+
+        .image-wrapper img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            border-radius: 0;
+            /* Zoom i pomak */
+            transform: scale(0.91) translateX(-30px); 
+            transform-origin: center center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .main-content {
+                flex-direction: column-reverse;
+            }
+            .question-wrapper {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+            .image-wrapper {
+                flex: 0 0 50vh;
+            }
+            .image-wrapper img {
+                transform: scale(1) translateX(0);
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="question-wrapper">
+            <div class="question-container">
+                <div class="question-text">
+                    Na kojem je području Hrvatske najintenzivnije padala kiša u 18:00 sati?
+                </div>
+                <form id="answerForm">
+                    <div class="answers">
+                        <div class="answer-option" onclick="selectAnswer(this)">
+                            <input type="radio" id="answer_a" name="answer" value="A">
+                            <label for="answer_a">A) Sjeverna Hrvatska</label>
+                        </div>
+                        <div class="answer-option" onclick="selectAnswer(this)">
+                            <input type="radio" id="answer_b" name="answer" value="B">
+                            <label for="answer_b">B) Istočna Hrvatska</label>
+                        </div>
+                        <div class="answer-option" onclick="selectAnswer(this)">
+                            <input type="radio" id="answer_c" name="answer" value="C">
+                            <label for="answer_c">C) Jadranska obala</label>
+                        </div>
+                        <div class="answer-option" onclick="selectAnswer(this)">
+                            <input type="radio" id="answer_d" name="answer" value="D">
+                            <label for="answer_d">D) Južna Dalmacija</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-button" id="submitBtn" disabled>
+                        Potvrdi odgovor
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="image-wrapper">
+            <img src="img/kompozit_20260125_1800.png" alt="Radar kompozit 18:00" id="radarImage">
+        </div>
+    </div>
+
+    <script>
+        const TRIAL_START = Date.now();
+        console.log('TRIAL_START_L1:', TRIAL_START);
+
+        function selectAnswer(element) {
+            document.querySelectorAll('.answer-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            const radio = element.querySelector('input[type="radio"]');
+            radio.checked = true;
+            document.getElementById('submitBtn').disabled = false;
+
+            if (!window.firstSelectionTime) {
+                window.firstSelectionTime = Date.now();
+                console.log('FIRST_SELECTION:', window.firstSelectionTime - TRIAL_START);
+            }
+        }
+
+        document.getElementById('answerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (selectedAnswer) {
+                // Onemogući gumb da se ne klikne dvaput
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Spremanje...";
+                submitBtn.classList.add('success');
+
+                const responseTime = Date.now() - TRIAL_START;
+                const answer = selectedAnswer.value;
+                const isCorrect = (answer === 'B'); 
+                
+                const data = {
+                    trial: 'L1',
+                    answer: answer,
+                    correct: isCorrect,
+                    responseTime: responseTime,
+                    timestamp: new Date().toISOString()
+                };
+
+                // ROBUSTAN NAČIN SPREMANJA
+                try {
+                    let allData = [];
+                    const storedData = localStorage.getItem('experimentData');
+                    
+                    if (storedData) {
+                        // Pokušaj parsirati postojeće podatke
+                        allData = JSON.parse(storedData);
+                        if (!Array.isArray(allData)) {
+                            // Ako nije array, resetiraj
+                            allData = [];
+                        }
+                    }
+                    
+                    allData.push(data);
+                    localStorage.setItem('experimentData', JSON.stringify(allData));
+                    console.log('Uspješno spremljeno:', data);
+                    
+                } catch (error) {
+                    console.error('Greška pri spremanju u localStorage:', error);
+                    // Fallback: Ako je stari JSON bio pokvaren, prebriši i spremi samo novo
+                    localStorage.setItem('experimentData', JSON.stringify([data]));
+                }
+                
+                // Kratka odgoda prije preusmjeravanja (500ms) radi sigurnosti i UX-a
+                setTimeout(function() {
+                    window.location.href = 'radar_L2.html';
+                }, 500);
+            }
+        });
+
+        document.getElementById('radarImage').onerror = function() {
+            console.error('Slika nije pronađena:', this.src);
+            this.alt = 'Slika nije dostupna';
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '1' || e.key === 'a' || e.key === 'A') document.getElementById('answer_a').click();
+            else if (e.key === '2' || e.key === 'b' || e.key === 'B') document.getElementById('answer_b').click();
+            else if (e.key === '3' || e.key === 'c' || e.key === 'C') document.getElementById('answer_c').click();
+            else if (e.key === '4' || e.key === 'd' || e.key === 'D') document.getElementById('answer_d').click();
+            else if (e.key === 'Enter') {
+                const submitBtn = document.getElementById('submitBtn');
+                if (!submitBtn.disabled) submitBtn.click();
+            }
+        });
+
+
+    </script>
+</body>
+</html>

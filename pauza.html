@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pauza - DHMZ</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body{
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .card{
+      width: 100%;
+      max-width: 700px;
+      background-color: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      text-align: center;
+    }
+
+    .title{
+      font-size: 14px;
+      font-weight: 600;
+      color: #3498db;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .message{
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .submit-button{
+      padding: 12px 30px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .submit-button:hover{ background-color: #2980b9; }
+
+    .submit-button:disabled{
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .submit-button.success{
+      background-color: #27ae60;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="title">Pauza</div>
+
+    <div class="message">
+Slijedi drugi dio istraživanja.
+Uzmite kratku pauzu i nastavite kada budete spremni.
+    </div>
+
+    <button type="button" class="submit-button" id="continueBtn" onclick="continueNext()">
+      Nastavi
+    </button>
+  </div>
+
+  <script>
+    const SCREEN_START = Date.now();
+    console.log('SCREEN_START_PAUSE:', SCREEN_START);
+
+    const trialGroupId = localStorage.getItem('trialGroupId') || null;
+    console.log('TRIAL_GROUP_ID_PAUSE:', trialGroupId);
+
+    // Ako su oba bloka završena, odmah ide kraj istraživanja
+    (function redirectIfFinished() {
+      const lowDone  = localStorage.getItem('lowDone') === '1';
+      const highDone = localStorage.getItem('highDone') === '1';
+
+      if (lowDone && highDone) {
+        window.location.href = 'kraj.html';   // ✅ umjesto end.html
+      }
+    })();
+
+    function continueNext() {
+      const btn = document.getElementById('continueBtn');
+      btn.disabled = true;
+      btn.textContent = "Nastavljam...";
+      btn.classList.add('success');
+
+      const responseTime = Date.now() - SCREEN_START;
+
+      const lowDone  = localStorage.getItem('lowDone') === '1';
+      const highDone = localStorage.getItem('highDone') === '1';
+      const last = localStorage.getItem('lastBlockCompleted') || null;
+      const startBlock = localStorage.getItem('startBlock') || null;
+
+      const data = {
+        trial: 'PAUSE',
+        trialGroupId: trialGroupId,
+        startBlock: startBlock,
+        lastBlockCompleted: last,
+        lowDone: lowDone,
+        highDone: highDone,
+        totalResponseTime: responseTime,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        let allData = [];
+        const storedData = localStorage.getItem('experimentData');
+
+        if (storedData) {
+          allData = JSON.parse(storedData);
+          if (!Array.isArray(allData)) allData = [];
+        }
+
+        allData.push(data);
+        localStorage.setItem('experimentData', JSON.stringify(allData));
+        console.log('Uspješno spremljeno (PAUSE):', data);
+
+      } catch (error) {
+        console.error('Greška pri spremanju u localStorage:', error);
+        localStorage.setItem('experimentData', JSON.stringify([data]));
+      }
+
+      // Ako su oba bloka gotova -> kraj
+      if (lowDone && highDone) {
+        window.location.href = 'kraj.html';
+        return;
+      }
+
+      // LOW → HIGH, HIGH → LOW
+      if (last === 'LOW') {
+        window.location.href = 'radar_H1.html';
+      } else if (last === 'HIGH') {
+        window.location.href = 'radar_L1.html';
+      } else {
+        // fallback: ako lastBlockCompleted nije postavljen, koristi startBlock
+        if (startBlock === 'LOW') window.location.href = 'radar_L1.html';
+        else if (startBlock === 'HIGH') window.location.href = 'radar_H1.html';
+        else window.location.href = 'index.html';
+      }
+    }
+
+    // Enter = Nastavi
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const btn = document.getElementById('continueBtn');
+        if (!btn.disabled) btn.click();
+      }
+    });
+  </script>
+</body>
+</html>
