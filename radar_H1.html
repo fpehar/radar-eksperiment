@@ -447,14 +447,23 @@
         this.alt = 'Slika nije dostupna';
     };
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.key === '1' || e.key === 'a' || e.key === 'A') document.getElementById('answer_a').click();
-        else if (e.key === '2' || e.key === 'b' || e.key === 'B') document.getElementById('answer_b').click();
-        else if (e.key === '3' || e.key === 'c' || e.key === 'C') document.getElementById('answer_c').click();
-        else if (e.key === 'ArrowLeft' && currentTimeIndex > 0) loadImage(currentTimeIndex - 1);
-        else if (e.key === 'ArrowRight' && currentTimeIndex < timeSlots.length - 1) loadImage(currentTimeIndex + 1);
-        else if (e.key === 'Enter') {
-            const submitBtn = document.getElem
+ // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '1' || e.key === 'a' || e.key === 'A') {
+      document.getElementById('answer_a').click();
+    } else if (e.key === '2' || e.key === 'b' || e.key === 'B') {
+      document.getElementById('answer_b').click();
+    } else if (e.key === '3' || e.key === 'c' || e.key === 'C') {
+      document.getElementById('answer_c').click();
+    } else if (e.key === 'ArrowLeft' && currentTimeIndex > 0) {
+      loadImage(currentTimeIndex - 1);
+    } else if (e.key === 'ArrowRight' && currentTimeIndex < timeSlots.length - 1) {
+      loadImage(currentTimeIndex + 1);
+    } else if (e.key === 'Enter') {
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn && !submitBtn.disabled) submitBtn.click();
+    }
+  });
+</script>
 </body>
 </html>
