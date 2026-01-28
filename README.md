@@ -7,7 +7,7 @@ radna verzija ET eksperimenta na temelju radarskih slika
 - logika se razlikuje kod onih koji su započeli s Low i High zadacima
 
 # Kako izgleda flow
-
+```
 +------------------+
 |   index.html      |
 |  (START screen)   |
@@ -74,7 +74,7 @@ radna verzija ET eksperimenta na temelju radarskih slika
                             | summary.csv|
                             | events.csv |
                             +-----------+
-
+```
 
 # Slike
 - kompoziti se nalaze u folderu /img
