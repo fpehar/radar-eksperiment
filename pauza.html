@@ -75,15 +75,12 @@
   </style>
 </head>
 <body>
-
   <div class="card">
     <div class="title">Pauza</div>
-
     <div class="message">
 Slijedi drugi dio istraživanja.
 Uzmite kratku pauzu i nastavite kada budete spremni.
     </div>
-
     <button type="button" class="submit-button" id="continueBtn" onclick="continueNext()">
       Nastavi
     </button>
@@ -93,8 +90,18 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
     const SCREEN_START = Date.now();
     console.log('SCREEN_START_PAUSE:', SCREEN_START);
 
-    const trialGroupId = localStorage.getItem('trialGroupId') || null;
+    // DOHVATI SVE ID-EVE
+    const participantId = localStorage.getItem('participantId');
+    const participantCode = localStorage.getItem('participantCode');
+    const trialGroupId = localStorage.getItem('trialGroupId');
+
     console.log('TRIAL_GROUP_ID_PAUSE:', trialGroupId);
+
+    // PROVJERA
+    if (!participantId || !trialGroupId) {
+      alert('Nedostaju podaci o identifikaciji. Bit ćete preusmjereni na početak.');
+      window.location.href = 'index.html';
+    }
 
     // Ako su oba bloka završena, odmah ide kraj istraživanja
     (function redirectIfFinished() {
@@ -102,7 +109,7 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
       const highDone = localStorage.getItem('highDone') === '1';
 
       if (lowDone && highDone) {
-        window.location.href = 'kraj.html';   // ✅ umjesto end.html
+        window.location.href = 'kraj.html';
       }
     })();
 
@@ -119,13 +126,24 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
       const last = localStorage.getItem('lastBlockCompleted') || null;
       const startBlock = localStorage.getItem('startBlock') || null;
 
+      // KOMPLETAN DATA OBJECT
       const data = {
-        trial: 'PAUSE',
+        // Identifikatori
+        participantId: participantId,
+        participantCode: participantCode,
         trialGroupId: trialGroupId,
+        
+        // Trial info
+        trial: 'PAUSE',
+        type: 'BREAK',
+        
+        // Status
         startBlock: startBlock,
         lastBlockCompleted: last,
         lowDone: lowDone,
         highDone: highDone,
+        
+        // Timing
         totalResponseTime: responseTime,
         timestamp: new Date().toISOString()
       };
@@ -160,10 +178,14 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
       } else if (last === 'HIGH') {
         window.location.href = 'radar_L1.html';
       } else {
-        // fallback: ako lastBlockCompleted nije postavljen, koristi startBlock
-        if (startBlock === 'LOW') window.location.href = 'radar_L1.html';
-        else if (startBlock === 'HIGH') window.location.href = 'radar_H1.html';
-        else window.location.href = 'index.html';
+        // FALLBACK: INVERTIRAJ startBlock (ne ponavljaj isti!)
+        if (startBlock === 'LOW') {
+          window.location.href = 'radar_H1.html';  // LOW završen → idi na HIGH
+        } else if (startBlock === 'HIGH') {
+          window.location.href = 'radar_L1.html';  // HIGH završen → idi na LOW
+        } else {
+          window.location.href = 'index.html';
+        }
       }
     }
 
@@ -176,4 +198,5 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
     });
   </script>
 </body>
+
 </html>

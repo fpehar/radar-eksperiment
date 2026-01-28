@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Početak istraživanja - DHMZ</title>
+  <title>Identifikacija sudionika - DHMZ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body{
       font-family: Arial, sans-serif;
-      background-color: #ffffff;
+      background-color: #f5f5f5;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -17,65 +17,17 @@
       padding: 20px;
     }
 
- .layout{
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  gap: 20px;
-  align-items: flex-start; 
-}
-
-.card{
-  flex: 0 0 33%;
-  max-width: 360px;   /* opcionalno: da ne postane preširok na velikim ekranima */
-  background-color: white;
-  padding: 28px;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-    /* desni stupac: isti “image-wrapper” osjećaj kao u zadacima */
-.preview{
-  flex: 1;
-  display: flex;
-  justify-content: center; /* CENTRIRA radar-frame */
-  align-items: center;
-}
-
-.radar-frame{
-  width: 100%;
-  max-width: 720px;        /* ISTA širina kao u zadacima */
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-    /* vremenska-lenta izgled (tamna traka) */
-.preview-header{
-  background-color: #2c3e50;
-  color: white;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-    /* slika u istom režimu kao zadaci */
-.preview-body{
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.preview-body img{
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
+    .card{
+      width: 100%;
+      max-width: 500px;
+      background-color: white;
+      padding: 35px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
     .kicker{
       font-size: 14px;
@@ -83,44 +35,87 @@
       color: #3498db;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      text-align: center;
     }
 
     .title{
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
       color: #2c3e50;
-      margin-top: 2px;
+      text-align: center;
+      margin-bottom: 10px;
     }
 
-    .text{
+    .intro{
       font-size: 15px;
       color: #2c3e50;
-      line-height: 1.55;
+      line-height: 1.6;
+      text-align: center;
     }
 
-    .note{
+    /* INPUT SEKCIJA */
+    .input-section {
+      margin-top: 10px;
+      padding: 18px;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      border: 2px solid #ddd;
+    }
+
+    .input-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      outline: none;
+      font-family: monospace;
+      text-transform: uppercase;
+    }
+
+    .input-field:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+    }
+
+    .input-hint {
       font-size: 13px;
       color: #7f8c8d;
-      font-style: italic;
-      line-height: 1.45;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .input-example {
+      font-size: 12px;
+      color: #2c3e50;
+      margin-top: 10px;
       padding: 10px;
-      background: #f8f9fa;
-      border-left: 3px solid #95a5a6;
+      background-color: #e3f2fd;
       border-radius: 4px;
+      font-family: monospace;
+      line-height: 1.5;
     }
 
     .submit-button{
-      padding: 12px 30px;
+      padding: 14px 30px;
       background-color: #3498db;
       color: white;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       cursor: pointer;
       transition: background-color 0.3s;
       width: 100%;
-      margin-top: 6px;
+      margin-top: 10px;
     }
 
     .submit-button:hover{ background-color: #2980b9; }
@@ -135,57 +130,78 @@
       pointer-events: none;
     }
 
-    @media (max-width: 1050px){
-      .layout{ flex-direction: column; }
-      .card{ flex: 0 0 auto; }
-      .preview{ min-height: 40vh; }
-      .preview-body img{
-        transform: scale(1) translateX(0);
-        width: 100%;
-        height: 100%;
-      }
+    .error-msg {
+      color: #e74c3c;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .required {
+      color: #e74c3c;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
-  <div class="layout">
-    <div class="card">
-      <div class="kicker">Istraživanje</div>
-      <div class="title">Zadaci s radarskim prikazima</div>
+  <div class="card">
+    <div class="kicker">Istraživanje</div>
+    <div class="title">Identifikacija sudionika</div>
 
-      <div class="text">
-        U ovom istraživanju rješavat ćete zadatke na temelju radarskih prikaza oborina.
-        Nakon svakog bloka zadataka slijedi kratka subjektivna procjena radnog opterećenja povezanog sa zadacima koje ste riješili.
+    <div class="intro">
+      Dobrodošli! Prije nego počnete s istraživanjem, molimo unesite vaš jedinstveni ID i identifikacijsku šifru.
+    </div>
+
+    <!-- INPUT 1: ID SUDIONIKA -->
+    <div class="input-section">
+      <label class="input-label" for="participantId">
+        1. ID Sudionika: <span class="required">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="participantId" 
+        class="input-field" 
+        placeholder="Npr. P001, P002..."
+        autocomplete="off"
+        required
+      />
+      <div class="input-hint">
+        Unesite jedinstveni ID koji vam je dodijelio istraživač.
       </div>
-
-      <div class="note">
-        Desno je prikazana kratka animacija s prikazom oblaka i oborina. Animacija služi isključivo za upoznavanje s načinom prikaza podataka u istraživanju.
-        
-      </div>
-      <div class="text">
-  <p>Tijekom rješavanja zadataka pokušajte sjediti mirno i izbjegavati nepotrebne pokrete glave ili tijela kako bi prikaz bio što jasniji.</p><br />
-  <p>Kada ste spremni, odaberite gumb <strong>"Započni"</strong>.</p>
-</div>
-
-
-      <button type="button" class="submit-button" id="startBtn" onclick="startExperiment()">
-        Započni
-      </button>
     </div>
 
-<div class="preview">
-  <div class="radar-frame">
-    <div class="preview-header">
-      Radarski prikaz oborina – primjer
-    </div>
-
-    <div class="preview-body">
-      <img src="img/anim_kompozit.gif"
-           alt="Animirani radarski prikaz oborina (primjer)">
-    </div>
+<!-- INPUT 2: ŠIFRA ZA POVEZIVANJE -->
+<div class="input-section">
+  <label class="input-label" for="participantCode">
+    2. Identifikacijska šifra: <span class="required">*</span>
+  </label>
+  <input 
+    type="text" 
+    id="participantCode" 
+    class="input-field" 
+    placeholder="Unesite šifru"
+    autocomplete="off"
+    maxlength="20"
+    required
+  />
+  <div class="input-hint">
+    Molimo unesite identifikacijsku šifru koju ste generirali u prethodnom dijelu istraživanja (PsyToolkit). 
+    Šifra se sastoji od: <strong>prva dva slova imena majke + mjesec rođenja (broj) + zadnje slovo vlastitog imena</strong>.
+  </div>
+  <div class="input-example">
+    <strong>Primjer:</strong> majka Ana, mjesec rođenja 6, ime Darko → <strong>AN60O</strong>
+  </div>
+  <div class="error-msg" id="codeError">
+    Šifra mora sadržavati najmanje 4 znaka
   </div>
 </div>
+
+    <button type="button" class="submit-button" id="continueBtn" onclick="saveAndContinue()">
+      Nastavi
+    </button>
+  </div>
 
   <script>
     const SCREEN_START = Date.now();
@@ -195,63 +211,122 @@
       return `TG_${Date.now()}_${rand}`;
     }
 
-    function chooseStartBlock() {
-      // Ako već postoji od ranije, poštuj (npr. pilot), inače random 50/50
-      const existing = localStorage.getItem('startBlock');
-      if (existing === 'LOW' || existing === 'HIGH') return existing;
-      return (Math.random() < 0.5) ? 'LOW' : 'HIGH';
+    function determineStartBlock(participantId) {
+      const numMatch = participantId.match(/\d+/);
+      
+      if (!numMatch) {
+        console.warn('ID nema broj, koristim random');
+        return (Math.random() < 0.5) ? 'LOW' : 'HIGH';
+      }
+
+      const num = parseInt(numMatch[0], 10);
+      return (num % 2 === 0) ? 'LOW' : 'HIGH';
     }
 
-    // Enter = start (UX)
+    function validateCode(code) {
+      return code.length >= 4;
+    }
+
+    // Enter navigacija
     document.addEventListener('keydown', function(e){
-      if (e.key === 'Enter') document.getElementById('startBtn').click();
+      if (e.key === 'Enter') {
+        const activeEl = document.activeElement;
+        if (activeEl.id === 'participantId') {
+          document.getElementById('participantCode').focus();
+        } else if (activeEl.id === 'participantCode') {
+          document.getElementById('continueBtn').click();
+        }
+      }
     });
 
-    function startExperiment() {
-      const btn = document.getElementById('startBtn');
+    // Real-time validacija šifre
+    document.getElementById('participantCode').addEventListener('input', function(e) {
+      const code = e.target.value.trim().toUpperCase();
+      const errorMsg = document.getElementById('codeError');
+      
+      if (code.length > 0 && code.length < 4) {
+        errorMsg.style.display = 'block';
+      } else {
+        errorMsg.style.display = 'none';
+      }
+      
+      e.target.value = code;
+    });
+
+    function saveAndContinue() {
+      const btn = document.getElementById('continueBtn');
+      const participantIdInput = document.getElementById('participantId');
+      const participantCodeInput = document.getElementById('participantCode');
+      
+      const participantId = participantIdInput.value.trim();
+      const participantCode = participantCodeInput.value.trim().toUpperCase();
+
+      // VALIDACIJA ID-A
+      if (!participantId) {
+        alert('Molimo unesite ID sudionika prije nastavka.');
+        participantIdInput.focus();
+        return;
+      }
+
+      // VALIDACIJA ŠIFRE
+      if (!validateCode(participantCode)) {
+        alert('Molimo unesite identifikacijsku šifru (najmanje 4 znaka).');
+        participantCodeInput.focus();
+        document.getElementById('codeError').style.display = 'block';
+        return;
+      }
+
+      // PROVJERA: Je li ovaj ID već korišten?
+      const existingData = localStorage.getItem('experimentData');
+      if (existingData) {
+        try {
+          const allData = JSON.parse(existingData);
+          const alreadyUsed = allData.some(entry => 
+            entry.participantId === participantId && entry.trial === 'START'
+          );
+
+          if (alreadyUsed) {
+            const confirmRestart = confirm(
+              `ID "${participantId}" je već korišten. Želite li započeti NOVU sesiju?\n\n` +
+              `UPOZORENJE: Stari podaci bit će prebrisani!`
+            );
+            
+            if (!confirmRestart) {
+              return;
+            }
+          }
+        } catch (e) {
+          console.error('Parse error:', e);
+        }
+      }
+
       btn.disabled = true;
-      btn.textContent = 'Pokrećem...';
+      btn.textContent = 'Spremam...';
       btn.classList.add('success');
 
-      // Reset ključnih zastavica za novu sesiju
+      // CLEAR ALL OLD DATA
+      localStorage.clear();
+
+      // GENERIRAJ I SPREMI
       const trialGroupId = ensureTrialGroupId();
+      const startBlock = determineStartBlock(participantId);
+
       localStorage.setItem('trialGroupId', trialGroupId);
-
-      localStorage.removeItem('lowDone');
-      localStorage.removeItem('highDone');
-      localStorage.removeItem('lastBlockCompleted');
-
-      const startBlock = chooseStartBlock();
+      localStorage.setItem('participantId', participantId);
+      localStorage.setItem('participantCode', participantCode);
       localStorage.setItem('startBlock', startBlock);
 
-      // START event u experimentData
-      const startData = {
-        trial: 'START',
-        trialGroupId: trialGroupId,
-        startBlock: startBlock,
-        timestamp: new Date().toISOString(),
-        totalResponseTime: Date.now() - SCREEN_START
-      };
+      console.log('ID & Code saved:', {
+        participantId,
+        participantCode,
+        startBlock,
+        trialGroupId
+      });
 
-      try {
-        let allData = [];
-        const storedData = localStorage.getItem('experimentData');
-        if (storedData) {
-          allData = JSON.parse(storedData);
-          if (!Array.isArray(allData)) allData = [];
-        }
-        allData.push(startData);
-        localStorage.setItem('experimentData', JSON.stringify(allData));
-      } catch (err) {
-        localStorage.setItem('experimentData', JSON.stringify([startData]));
-      }
-
-      // Preusmjeri na prvi zadatak bloka
-      if (startBlock === 'LOW') {
-        window.location.href = 'radar_L1.html';
-      } else {
-        window.location.href = 'radar_H1.html';
-      }
+      // REDIRECT na START
+      setTimeout(() => {
+        window.location.href = 'start.html';
+      }, 300);
     }
   </script>
 </body>

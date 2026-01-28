@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zatvaranje i izvoz podataka</title>
+  <style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f5f5f5;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:780px;
+  background:#fff;
+  padding:25px;
+  border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.title{
+  font-size:14px;
+  font-weight:600;
+  color:#3498db;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.h{
+  font-size:18px;
+  font-weight:700;
+  color:#2c3e50;
+}
+
+.p{
+  font-size:15px;
+  color:#2c3e50;
+  line-height:1.6;
+  white-space:pre-line;
+}
+
+.meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.pill{
+  display:inline-block;
+  padding:8px 10px;
+  border-radius:8px;
+  background:#f8f9fa;
+  color:#2c3e50;
+  font-size:13px;
+  line-height:1.45;
+  border-left:3px solid #95a5a6;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  padding:12px 16px;
+  border:none;
+  border-radius:6px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  flex:1;
+  min-width:220px;
+  transition:background-color .2s;
+}
+
+.primary{ background:#ecf0f1; color:#2c3e50; }
+.primary:hover{ background:#dde4e8; }
+
+.secondary{ background:#ecf0f1; color:#2c3e50; }
+.secondary:hover{ background:#dde4e8; }
+
+.danger{ background:#e74c3c; color:#fff; }
+.danger:hover{ background:#c0392b; }
+
+.btn:disabled{ background:#95a5a6 !important; cursor:not-allowed; }
+
+.small{
+  font-size:13px;
+  color:#7f8c8d;
+  line-height:1.5;
+}
+
+#jsonBox{
+  width:100%;
+  height:220px;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size:12px;
+  white-space:pre;
+  overflow:auto;
+  display:none; /* pokaže se na Copy */
+}
+
+.ok{ color:#27ae60; font-weight:700; }
+.warn{ color:#c0392b; font-weight:700; }
+
+@media (max-width: 650px){
+  .actions{ flex-direction:column; }
+  .btn{ min-width:unset; }
+}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">Izvoz podataka</div>
+    <div class="h">Završni korak za ISTRAŽIVAČKI TIM</div>
+
+    <div class="p" id="statusText">
+      Kliknite na "Preuzmi sve" kako biste preuzeli datoteke s podacima istraživanja.
+      Nakon preuzimanja možete zatvoriti prozor.
+    </div>
+
+    <div class="meta">
+      <div class="pill" id="metaParticipant">participantId: —</div>
+      <div class="pill" id="metaGroup">trialGroupId: —</div>
+      <div class="pill" id="metaCount">zapisa u experimentData: —</div>
+      <div class="pill" id="metaFlags">status: —</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="downloadBtn">Preuzmi sve (JSON + CSV)</button>
+      <button class="btn secondary" id="copyBtn">Kopiraj JSON (backup)</button>
+      <button class="btn danger" id="clearBtn">Obriši lokalne podatke</button>
+    </div>
+
+    <div class="small" id="hint">
+      Ako preuzimanje ne radi, preglednik može blokirati više automatskih preuzimanja.
+      U tom slučaju: 1) kliknite "Preuzmi sve" još jednom, 2) dopustite "multiple downloads" ako se pojavi upit,
+      ili 3) koristite "Kopiraj JSON" i zalijepite u tekstualnu datoteku.
+    </div>
+
+    <textarea id="jsonBox" readonly></textarea>
+  </div>
+
+<script>
+  // ===== Utils =====
+  function safeJsonParse(value, fallback) {
+    try { return JSON.parse(value); } catch { return fallback; }
+  }
+
+  function toIsoNow() {
+    return new Date().toISOString();
+  }
+
+  function downloadBlob(filename, mime, content) {
+    // UTF-8 BOM za CSV (Excel compatibility)
+    let blobContent = content;
+    if (mime.includes('text/csv')) {
+      blobContent = '\uFEFF' + content;
+    }
+
+    const blob = new Blob([blobContent], { type: mime });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 800);
+  }
+
+  function csvEscape(v) {
+    if (v === null || v === undefined) return '';
+    const s = String(v);
+    if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+    return s;
+  }
+
+  function flattenObject(obj, prefix = '', out = {}) {
+    for (const [k, v] of Object.entries(obj || {})) {
+      const key = prefix ? `${prefix}.${k}` : k;
+
+      if (v === null || v === undefined) {
+        out[key] = '';
+      } else if (Array.isArray(v)) {
+        out[key] = JSON.stringify(v);
+      } else if (typeof v === 'object') {
+        flattenObject(v, key, out);
+      } else {
+        out[key] = v;
+      }
+    }
+    return out;
+  }
+
+  function rowsToCsv(rows) {
+    const allKeys = new Set();
+    rows.forEach(r => Object.keys(r || {}).forEach(k => allKeys.add(k)));
+    const headers = Array.from(allKeys);
+
+    const lines = [];
+    lines.push(headers.map(csvEscape).join(','));
+    for (const r of rows) {
+      lines.push(headers.map(h => csvEscape(r?.[h] ?? '')).join(','));
+    }
+    return lines.join('\n');
+  }
+
+  // ===== Summary CSV =====
+  function buildSummaryRows(experimentData) {
+    return (experimentData || []).map((entry) => {
+      const e = { ...(entry || {}) };
+
+      // Flatten recall object
+      if (e.recall && typeof e.recall === 'object') {
+        e.recall_entered = e.recall.entered || '';
+        e.recall_correctCount = e.recall.correctCount ?? '';
+        e.recall_fullyCorrect = e.recall.fullyCorrect ?? '';
+        e.recall_firstInputTime = e.recall.firstInputTime ?? '';
+        delete e.recall;
+      }
+
+      // Flatten question object (H2b)
+      if (e.question && typeof e.question === 'object') {
+        e.question_id = e.question.id || '';
+        e.question_answer = e.question.answer || '';
+        e.question_correct = e.question.correct ?? '';
+        e.question_responseTime = e.question.responseTime ?? '';
+        delete e.question;
+      }
+
+      // reduce heavy fields
+      if (e.imageViewSequence) delete e.imageViewSequence;
+
+      if (e.imagesViewed === undefined && Array.isArray(entry?.imageViewSequence)) {
+        e.imagesViewed = entry.imageViewSequence.length;
+      }
+      if (e.uniqueImagesViewed === undefined && Array.isArray(entry?.imageViewSequence)) {
+        const uniq = new Set(entry.imageViewSequence.map(x => x?.index ?? x?.src ?? JSON.stringify(x)));
+        e.uniqueImagesViewed = uniq.size;
+      }
+      if (!e.timestamp) e.timestamp = toIsoNow();
+
+      return flattenObject(e);
+    });
+  }
+
+  // ===== Events CSV =====
+  function buildEventRows(experimentData) {
+    const rows = [];
+
+    for (const entry of (experimentData || [])) {
+      if (!entry || typeof entry !== 'object') continue;
+
+      const participantId = entry.participantId || localStorage.getItem('participantId') || '';
+      const trialGroupId = entry.trialGroupId || localStorage.getItem('trialGroupId') || '';
+      const trial = entry.trial || '';
+      const timestamp = entry.timestamp || '';
+
+      // image view events
+      if (Array.isArray(entry.imageViewSequence)) {
+        entry.imageViewSequence.forEach((ev, idx) => {
+          rows.push({
+            participantId,
+            trialGroupId,
+            trial,
+            eventType: 'image_view',
+            eventIndex: idx,
+            t: ev?.timestamp ?? '',
+            timestamp,
+            details: JSON.stringify(ev || {})
+          });
+        });
+      }
+
+      // anchor event per trial
+      const anchorDetails = {};
+      if (entry.totalResponseTime !== undefined) anchorDetails.totalResponseTime = entry.totalResponseTime;
+      if (entry.responseTime !== undefined) anchorDetails.responseTime = entry.responseTime;
+      if (entry.answer !== undefined) anchorDetails.answer = entry.answer;
+      if (entry.recall !== undefined) anchorDetails.recall = entry.recall;
+      if (entry.type !== undefined) anchorDetails.type = entry.type;
+      if (entry.tlxBlock !== undefined) anchorDetails.tlxBlock = entry.tlxBlock;
+
+      rows.push({
+        participantId,
+        trialGroupId,
+        trial,
+        eventType: 'trial_end',
+        eventIndex: '',
+        t: entry.totalResponseTime ?? entry.responseTime ?? '',
+        timestamp,
+        details: Object.keys(anchorDetails).length ? JSON.stringify(anchorDetails) : ''
+      });
+    }
+
+    return rows;
+  }
+
+  function buildFilenames() {
+    const participantId = localStorage.getItem('participantId') || 'NA';
+    const trialGroupId = localStorage.getItem('trialGroupId') || 'NA';
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    return { participantId, trialGroupId, stamp };
+  }
+
+  function exportAllFormats() {
+    // PROVJERA ID-eva
+    const participantId = localStorage.getItem('participantId');
+    const trialGroupId = localStorage.getItem('trialGroupId');
+
+    if (!participantId || !trialGroupId) {
+      alert('Nedostaju identifikatori (participantId ili trialGroupId). Podaci možda nisu potpuni.');
+    }
+
+    const raw = localStorage.getItem('experimentData');
+    const experimentData = safeJsonParse(raw, []);
+    if (!Array.isArray(experimentData)) {
+      alert('Podaci u localStorage nisu u očekivanom formatu (experimentData nije array).');
+      return false;
+    }
+
+    const { participantId: pid, trialGroupId: tgid, stamp } = buildFilenames();
+
+    // JSON
+    const jsonName = `experiment_${pid}_${tgid}_${stamp}.json`;
+    downloadBlob(jsonName, 'application/json;charset=utf-8', JSON.stringify(experimentData, null, 2));
+
+    // DELAY između downloadova
+    setTimeout(() => {
+      const summaryRows = buildSummaryRows(experimentData);
+      const summaryCsv = rowsToCsv(summaryRows);
+      const summaryName = `summary_${pid}_${tgid}_${stamp}.csv`;
+      downloadBlob(summaryName, 'text/csv;charset=utf-8', summaryCsv);
+    }, 300);
+
+    setTimeout(() => {
+      const eventRows = buildEventRows(experimentData);
+      const eventsCsv = rowsToCsv(eventRows);
+      const eventsName = `events_${pid}_${tgid}_${stamp}.csv`;
+      downloadBlob(eventsName, 'text/csv;charset=utf-8', eventsCsv);
+    }, 600);
+
+    return true;
+  }
+
+  // ===== UI init =====
+  function initUI() {
+    const raw = localStorage.getItem('experimentData');
+    const experimentData = safeJsonParse(raw, []);
+    const count = Array.isArray(experimentData) ? experimentData.length : 0;
+
+    const participantId = localStorage.getItem('participantId') || '—';
+    const trialGroupId = localStorage.getItem('trialGroupId') || '—';
+
+    const lowDone = localStorage.getItem('lowDone') === '1';
+    const highDone = localStorage.getItem('highDone') === '1';
+    const socioDone = localStorage.getItem('socioDone') === '1';
+
+    document.getElementById('metaParticipant').textContent = `participantId: ${participantId}`;
+    document.getElementById('metaGroup').textContent = `trialGroupId: ${trialGroupId}`;
+    document.getElementById('metaCount').textContent = `zapisa u experimentData: ${count}`;
+    document.getElementById('metaFlags').textContent =
+      `status: lowDone=${lowDone ? '1' : '0'}, highDone=${highDone ? '1' : '0'}, socioDone=${socioDone ? '1' : '0'}`;
+
+    const jsonBox = document.getElementById('jsonBox');
+    jsonBox.value = JSON.stringify(Array.isArray(experimentData) ? experimentData : [], null, 2);
+  }
+
+  initUI();
+
+  // ===== Buttons =====
+  const downloadBtn = document.getElementById('downloadBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  downloadBtn.addEventListener('click', () => {
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = 'Preuzimam...';
+
+    const ok = exportAllFormats();
+    const status = document.getElementById('statusText');
+
+    if (ok) {
+      status.innerHTML = `<span class="ok">Datoteke su pokrenute za preuzimanje.</span>\nAko preglednik traži dopuštenje za više preuzimanja, molimo dopustite.\nNakon toga možete zatvoriti prozor.`;
+      downloadBtn.textContent = 'Preuzeto ✔';
+    } else {
+      status.innerHTML = `<span class="warn">Izvoz nije uspio.</span>\nMolimo pokušajte ponovno ili koristite "Kopiraj JSON (backup)".`;
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = 'Preuzmi sve (JSON + CSV)';
+    }
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    const jsonBox = document.getElementById('jsonBox');
+    jsonBox.style.display = 'block';
+    jsonBox.focus();
+    jsonBox.select();
+
+    try {
+      await navigator.clipboard.writeText(jsonBox.value);
+      copyBtn.textContent = 'Kopirano ✔';
+      setTimeout(() => (copyBtn.textContent = 'Kopiraj JSON (backup)'), 1200);
+    } catch (e) {
+      alert('Ne mogu automatski kopirati u clipboard. Ručno kopirajte označeni tekst (Ctrl/Cmd + C).');
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    const ok = confirm('Jeste li sigurni da želite obrisati lokalne podatke (localStorage)? Ovo se ne može vratiti.');
+    if (!ok) return;
+
+    const keys = [
+      'experimentData','trialGroupId','participantId','participantCode','startBlock','assignedBlock',
+      'lowDone','highDone','socioDone','lastBlockCompleted','currentTrialGroupId'
+    ];
+    keys.forEach(k => localStorage.removeItem(k));
+
+    document.getElementById('statusText').innerHTML =
+      `<span class="ok">Lokalni podaci su obrisani.</span>\nMožete zatvoriti prozor.`;
+    initUI();
+  });
+</script>
+</body>
+</html>

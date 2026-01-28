@@ -119,29 +119,43 @@
     </div>
 
     <div class="inputs">
-      <input class="digit" id="d1" inputmode="numeric" maxlength="1" autocomplete="off" />
-      <input class="digit" id="d2" inputmode="numeric" maxlength="1" autocomplete="off" />
-      <input class="digit" id="d3" inputmode="numeric" maxlength="1" autocomplete="off" />
-      <input class="digit" id="d4" inputmode="numeric" maxlength="1" autocomplete="off" />
+      <input type="text" class="digit" id="d1" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" />
+      <input type="text" class="digit" id="d2" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" />
+      <input type="text" class="digit" id="d3" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" />
+      <input type="text" class="digit" id="d4" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" />
     </div>
 
     <div class="hint">
       Upišite po jedan broj u svako polje.
     </div>
 
-    <button type="button" class="submit-button" id="submitBtn" disabled onclick="submitRecall()">
+    <button type="button" class="submit-button" id="submitBtn" disabled>
       Potvrdi unos
     </button>
   </div>
+
 
 <script>
   const TRIAL_START = Date.now();
   console.log('TRIAL_START_H3c:', TRIAL_START);
 
-  const trialGroupId = localStorage.getItem('trialGroupId') || null;
-  console.log('TRIAL_GROUP_ID_H3c:', trialGroupId);
+  // ✅ DOHVATI SVE ID-EVE
+  const participantId = localStorage.getItem('participantId') || null;
+  const participantCode = localStorage.getItem('participantCode') || null;
+  const startBlock = localStorage.getItem('startBlock') || null;
+  let trialGroupId = localStorage.getItem('trialGroupId') || null;
 
-  // očekivani niz (po tvojoj uputi)
+  if (!trialGroupId) {
+    // fallback: ako je netko otvorio H3c direktno
+    const rand = Math.random().toString(16).slice(2);
+    trialGroupId = `TG_${Date.now()}_${rand}`;
+    localStorage.setItem('trialGroupId', trialGroupId);
+  }
+
+  console.log('TRIAL_GROUP_ID_H3c:', trialGroupId);
+  console.log('PARTICIPANT_ID_H3c:', participantId);
+
+  // ✅ očekivani niz
   const CORRECT_SEQ = ['7','3','9','5'];
 
   const inputs = [
@@ -153,6 +167,19 @@
 
   const submitBtn = document.getElementById('submitBtn');
 
+  // Guard da se submit ne okine dvaput
+  let alreadySubmitted = false;
+
+  // Klik na gumb
+  submitBtn.addEventListener('click', submitRecall);
+
+  // Pouzdano osvježavanje stanja gumba
+  inputs.forEach((inp) => {
+    inp.addEventListener('input', updateSubmitState);
+    inp.addEventListener('change', updateSubmitState);
+    inp.addEventListener('keyup', updateSubmitState);
+  });
+
   function sanitizeDigit(v){
     const m = (v || '').match(/[0-9]/);
     return m ? m[0] : '';
@@ -160,28 +187,79 @@
 
   function updateSubmitState(){
     const allFilled = inputs.every(i => i.value.trim() !== '');
-    submitBtn.disabled = !allFilled;
+    submitBtn.disabled = !allFilled || alreadySubmitted;
   }
+
+  // Standardno spremanje (append u experimentData)
+  function appendExperimentData(entry) {
+    try {
+      let allData = [];
+      const stored = localStorage.getItem('experimentData');
+      if (stored) {
+        allData = JSON.parse(stored);
+        if (!Array.isArray(allData)) allData = [];
+      }
+      allData.push(entry);
+      localStorage.setItem('experimentData', JSON.stringify(allData));
+    } catch (e) {
+      console.error('Greška pri spremanju u localStorage:', e);
+      localStorage.setItem('experimentData', JSON.stringify([entry]));
+    }
+  }
+
+  // bilježi vrijeme prvog unosa
+  let firstInputTime = null;
 
   // auto-advance i filtriranje unosa
   inputs.forEach((inp, idx) => {
     inp.addEventListener('input', () => {
       inp.value = sanitizeDigit(inp.value);
+
+      if (inp.value && firstInputTime === null) {
+        firstInputTime = Date.now();
+        console.log('FIRST_INPUT_H3c:', firstInputTime - TRIAL_START);
+      }
+
       updateSubmitState();
-      if (inp.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+
+      if (inp.value && idx < inputs.length - 1) {
+        inputs[idx + 1].focus();
+      }
     });
 
     inp.addEventListener('keydown', (e) => {
-      if (e.key === 'Backspace' && !inp.value && idx > 0) inputs[idx - 1].focus();
+      if (e.key === 'Backspace' && !inp.value && idx > 0) {
+        inputs[idx - 1].focus();
+      }
+
+      // Enter = potvrdi, ali spriječi "implicitni submit"/refresh
       if (e.key === 'Enter') {
+        e.preventDefault();
         if (!submitBtn.disabled) submitBtn.click();
       }
     });
   });
 
+  // dodatna zaštita: Enter bilo gdje na stranici ne smije napraviti refresh
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  });
+
+  // fokus na prvo polje
   inputs[0].focus();
+  updateSubmitState();
 
   function submitRecall(){
+    if (alreadySubmitted) return;
+
+    const allFilled = inputs.every(i => i.value.trim() !== '');
+    if (!allFilled) return;
+
+    alreadySubmitted = true;
+    updateSubmitState();
+
     const seq = inputs.map(i => i.value.trim());
     const responseTime = Date.now() - TRIAL_START;
 
@@ -189,51 +267,59 @@
     submitBtn.textContent = "Spremanje...";
     submitBtn.classList.add('success');
 
+    // zaključaj polja da se ništa ne okida ponovno
+    inputs.forEach(i => i.disabled = true);
+
+    // točnost: full match + broj pogodaka
     const perDigitCorrect = seq.map((v, i) => v === CORRECT_SEQ[i]);
     const correctCount = perDigitCorrect.filter(Boolean).length;
     const fullyCorrect = (correctCount === CORRECT_SEQ.length);
 
+    // ✅ KOMPLETAN DATA OBJECT
     const data = {
-      trial: 'H3c',
+      // Identifikatori
+      participantId: participantId,
+      participantCode: participantCode,
       trialGroupId: trialGroupId,
+      startBlock: startBlock,
+      
+      // Trial info
+      trial: 'H3c',
+      trialType: 'HIGH',
+      taskDescription: 'Dual-task digit recall',
+      
+      // Recall data
       recall: {
         entered: seq.join('-'),
         enteredArray: seq,
         correctArray: CORRECT_SEQ,
-        perDigitCorrect,
-        correctCount,
-        fullyCorrect
+        perDigitCorrect: perDigitCorrect,
+        correctCount: correctCount,
+        fullyCorrect: fullyCorrect,
+        firstInputTime: firstInputTime ? (firstInputTime - TRIAL_START) : null
       },
+      
+      // Timing
       totalResponseTime: responseTime,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+
+      // ✅ ET SYNC (Unix timestamps)
+      unixTimestamps: {
+        trialStart: TRIAL_START,
+        firstInput: firstInputTime ? firstInputTime : null,
+        submit: Date.now()
+      }
     };
 
-    try {
-      let allData = [];
-      const storedData = localStorage.getItem('experimentData');
+    appendExperimentData(data);
+    console.log('Uspješno spremljeno (H3c):', data);
 
-      if (storedData) {
-        allData = JSON.parse(storedData);
-        if (!Array.isArray(allData)) allData = [];
-      }
-
-      allData.push(data);
-      localStorage.setItem('experimentData', JSON.stringify(allData));
-      console.log('Uspješno spremljeno:', data);
-
-    } catch (error) {
-      console.error('Greška pri spremanju u localStorage:', error);
-      localStorage.setItem('experimentData', JSON.stringify([data]));
-    }
-
-    // kraj HIGH bloka -> NASA TLX HIGH
-    setTimeout(function(){
-      window.location.href = 'nasa_tlx_H.html?trial=H3c';
-    }, 400);
+    // replace() je bolji (manje problema s Back i "loop" ponašanjem)
+    window.location.replace('nasa_tlx_H.html?trial=H3c');
   }
 
-  // izloži funkciju za onclick
   window.submitRecall = submitRecall;
 </script>
+
 </body>
 </html>

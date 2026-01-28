@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L1 Zadatak - DHMZ</title>
-    <style>
+
+   <style>
         * {
             margin: 0;
             padding: 0;
@@ -184,19 +185,19 @@
                     <div class="answers">
                         <div class="answer-option" onclick="selectAnswer(this)">
                             <input type="radio" id="answer_a" name="answer" value="A">
-                            <label for="answer_a">A) Sjeverna Hrvatska</label>
+                            <label for="answer_a">Sjeverna Hrvatska</label>
                         </div>
                         <div class="answer-option" onclick="selectAnswer(this)">
                             <input type="radio" id="answer_b" name="answer" value="B">
-                            <label for="answer_b">B) Istočna Hrvatska</label>
+                            <label for="answer_b">Istočna Hrvatska</label>
                         </div>
                         <div class="answer-option" onclick="selectAnswer(this)">
                             <input type="radio" id="answer_c" name="answer" value="C">
-                            <label for="answer_c">C) Jadranska obala</label>
+                            <label for="answer_c">Jadranska obala</label>
                         </div>
                         <div class="answer-option" onclick="selectAnswer(this)">
                             <input type="radio" id="answer_d" name="answer" value="D">
-                            <label for="answer_d">D) Južna Dalmacija</label>
+                            <label for="answer_d">Južna Dalmacija</label>
                         </div>
                     </div>
                     <button type="submit" class="submit-button" id="submitBtn" disabled>
@@ -211,98 +212,143 @@
         </div>
     </div>
 
-    <script>
-        const TRIAL_START = Date.now();
-        console.log('TRIAL_START_L1:', TRIAL_START);
+<script>
+    const TRIAL_START = Date.now();
+    console.log('TRIAL_START_L1:', TRIAL_START);
 
-        function selectAnswer(element) {
-            document.querySelectorAll('.answer-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            const radio = element.querySelector('input[type="radio"]');
-            radio.checked = true;
-            document.getElementById('submitBtn').disabled = false;
+    // ✅ DOHVATI ID-EVE
+    const participantId = localStorage.getItem('participantId');
+    const participantCode = localStorage.getItem('participantCode');
+    const trialGroupId = localStorage.getItem('trialGroupId');
+    const startBlock = localStorage.getItem('startBlock');
 
-            if (!window.firstSelectionTime) {
-                window.firstSelectionTime = Date.now();
-                console.log('FIRST_SELECTION:', window.firstSelectionTime - TRIAL_START);
-            }
+    // ✅ PROVJERA: Jesu li postavljeni?
+    if (!participantId || !trialGroupId) {
+        alert('Nedostaju podaci o identifikaciji. Bit ćete preusmjereni na početak.');
+        window.location.href = 'index.html';
+    }
+
+    // ✅ TRACK: Je li slika učitana?
+    let imageLoaded = false;
+    let imageLoadTime = null;
+
+    document.getElementById('radarImage').addEventListener('load', function() {
+        imageLoaded = true;
+        imageLoadTime = Date.now() - TRIAL_START;
+        console.log('IMAGE_LOADED_L1:', imageLoadTime);
+    });
+
+    document.getElementById('radarImage').onerror = function() {
+        console.error('Slika nije pronađena:', this.src);
+        this.alt = 'Slika nije dostupna';
+        imageLoaded = false;
+    };
+
+    function selectAnswer(element) {
+        document.querySelectorAll('.answer-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        element.classList.add('selected');
+        const radio = element.querySelector('input[type="radio"]');
+        radio.checked = true;
+        document.getElementById('submitBtn').disabled = false;
+
+        if (!window.firstSelectionTime) {
+            window.firstSelectionTime = Date.now();
+            console.log('FIRST_SELECTION:', window.firstSelectionTime - TRIAL_START);
         }
+    }
 
-        document.getElementById('answerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+    document.getElementById('answerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (selectedAnswer) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Spremanje...";
+            submitBtn.classList.add('success');
+
+            const responseTime = Date.now() - TRIAL_START;
+            const answer = selectedAnswer.value;
+            const CORRECT_ANSWER = 'B';
+            const isCorrect = (answer === CORRECT_ANSWER);
             
-            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-            const submitBtn = document.getElementById('submitBtn');
-
-            if (selectedAnswer) {
-                // Onemogući gumb da se ne klikne dvaput
-                submitBtn.disabled = true;
-                submitBtn.textContent = "Spremanje...";
-                submitBtn.classList.add('success');
-
-                const responseTime = Date.now() - TRIAL_START;
-                const answer = selectedAnswer.value;
-                const isCorrect = (answer === 'B'); 
+            // ✅ KOMPLETAN DATA OBJECT
+            const data = {
+                // Identifikatori
+                participantId: participantId,
+                participantCode: participantCode,
+                trialGroupId: trialGroupId,
+                startBlock: startBlock,
                 
-                const data = {
-                    trial: 'L1',
-                    answer: answer,
-                    correct: isCorrect,
-                    responseTime: responseTime,
-                    timestamp: new Date().toISOString()
-                };
+                // Trial info
+                trial: 'L1',
+                trialType: 'LOW',
+                taskDescription: 'Spatial identification',
+                
+                // Odgovor
+                answer: answer,
+                correct: isCorrect,
+                correctKey: CORRECT_ANSWER,
+                
+                // Timing
+                responseTime: responseTime,
+                firstSelectionTime: window.firstSelectionTime ? (window.firstSelectionTime - TRIAL_START) : null,
+                
+                // Metadata
+                imageLoaded: imageLoaded,
+                imagePath: 'img/kompozit_20260125_1800.png',
+                timestamp: new Date().toISOString(),
 
-                // ROBUSTAN NAČIN SPREMANJA
-                try {
-                    let allData = [];
-                    const storedData = localStorage.getItem('experimentData');
-                    
-                    if (storedData) {
-                        // Pokušaj parsirati postojeće podatke
-                        allData = JSON.parse(storedData);
-                        if (!Array.isArray(allData)) {
-                            // Ako nije array, resetiraj
-                            allData = [];
-                        }
+                // ✅ ET SYNC (Unix timestamps)
+                unixTimestamps: {
+                    trialStart: TRIAL_START,
+                    imageLoaded: imageLoadTime ? (TRIAL_START + imageLoadTime) : null,
+                    firstSelection: window.firstSelectionTime ? window.firstSelectionTime : null,
+                    submit: Date.now()
+                }
+            };
+
+            try {
+                let allData = [];
+                const storedData = localStorage.getItem('experimentData');
+                
+                if (storedData) {
+                    allData = JSON.parse(storedData);
+                    if (!Array.isArray(allData)) {
+                        allData = [];
                     }
-                    
-                    allData.push(data);
-                    localStorage.setItem('experimentData', JSON.stringify(allData));
-                    console.log('Uspješno spremljeno:', data);
-                    
-                } catch (error) {
-                    console.error('Greška pri spremanju u localStorage:', error);
-                    // Fallback: Ako je stari JSON bio pokvaren, prebriši i spremi samo novo
-                    localStorage.setItem('experimentData', JSON.stringify([data]));
                 }
                 
-                // Kratka odgoda prije preusmjeravanja (500ms) radi sigurnosti i UX-a
-                setTimeout(function() {
-                    window.location.href = 'radar_L2.html';
-                }, 500);
+                allData.push(data);
+                localStorage.setItem('experimentData', JSON.stringify(allData));
+                console.log('Uspješno spremljeno:', data);
+                
+            } catch (error) {
+                console.error('Greška pri spremanju u localStorage:', error);
+                localStorage.setItem('experimentData', JSON.stringify([data]));
             }
-        });
+            
+            setTimeout(function() {
+                window.location.href = 'radar_L2.html';
+            }, 500);
+        }
+    });
 
-        document.getElementById('radarImage').onerror = function() {
-            console.error('Slika nije pronađena:', this.src);
-            this.alt = 'Slika nije dostupna';
-        };
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.key === '1' || e.key === 'a' || e.key === 'A') document.getElementById('answer_a').click();
+        else if (e.key === '2' || e.key === 'b' || e.key === 'B') document.getElementById('answer_b').click();
+        else if (e.key === '3' || e.key === 'c' || e.key === 'C') document.getElementById('answer_c').click();
+        else if (e.key === '4' || e.key === 'd' || e.key === 'D') document.getElementById('answer_d').click();
+        else if (e.key === 'Enter') {
+            const submitBtn = document.getElementById('submitBtn');
+            if (!submitBtn.disabled) submitBtn.click();
+        }
+    });
+</script>
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.key === '1' || e.key === 'a' || e.key === 'A') document.getElementById('answer_a').click();
-            else if (e.key === '2' || e.key === 'b' || e.key === 'B') document.getElementById('answer_b').click();
-            else if (e.key === '3' || e.key === 'c' || e.key === 'C') document.getElementById('answer_c').click();
-            else if (e.key === '4' || e.key === 'd' || e.key === 'D') document.getElementById('answer_d').click();
-            else if (e.key === 'Enter') {
-                const submitBtn = document.getElementById('submitBtn');
-                if (!submitBtn.disabled) submitBtn.click();
-            }
-        });
-
-
-    </script>
 </body>
 </html>

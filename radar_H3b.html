@@ -363,14 +363,27 @@
   const TRIAL_START = Date.now();
   console.log('TRIAL_START_H3b:', TRIAL_START);
 
+  // ✅ DOHVATI SVE ID-EVE
+  const participantId = localStorage.getItem('participantId') || null;
+  const participantCode = localStorage.getItem('participantCode') || null;
   const trialGroupId = localStorage.getItem('trialGroupId') || null;
+  const startBlock = localStorage.getItem('startBlock') || null;
+
   console.log('TRIAL_GROUP_ID_H3b:', trialGroupId);
+  console.log('PARTICIPANT_ID_H3b:', participantId);
+  console.log('PARTICIPANT_CODE_H3b:', participantCode);
+
+  if (!trialGroupId) {
+    console.warn('H3b: nema trialGroupId u localStorage -> povratak na index.html');
+    window.location.href = 'index.html';
+  }
 
   // ===== TIMER =====
   const TIME_LIMIT_SECONDS = 60;
   let remainingSeconds = TIME_LIMIT_SECONDS;
   let timerInterval = null;
   let didTimeout = false;
+  let timerStartTime = null;
 
   function formatTime(sec) {
     const m = Math.floor(sec / 60).toString().padStart(2, '0');
@@ -389,7 +402,9 @@
   }
 
   function startCountdown() {
+    timerStartTime = Date.now();
     updateCountdownUI();
+    
     timerInterval = setInterval(() => {
       remainingSeconds -= 1;
       updateCountdownUI();
@@ -406,7 +421,6 @@
   function handleTimeout() {
     didTimeout = true;
 
-    // vizualno: 00:00 + upozorenje (ali NE prebacujemo automatski na drugu stranicu)
     const countdown = document.getElementById('countdown');
     if (countdown) {
       countdown.textContent = "00:00";
@@ -414,9 +428,7 @@
     }
 
     console.log('H3b_TIME_LIMIT_REACHED:', Date.now() - TRIAL_START);
-
-    // Ovdje NAMJERNO ne radimo auto-submit.
-    // Ispitanik i dalje može odgovoriti; mi samo bilježimo timeout=true kad submit-a.
+    // Ispitanik može i dalje odgovoriti
   }
 
   // ===== SLIKE / VREMENSKA LENTA =====
@@ -450,6 +462,7 @@
   let currentTimeIndex = 0;
   let imageViewLog = [];
   let answered = false;
+  let imageLoadTime = null;
 
   function buildTimeBar() {
     const timeBar = document.getElementById('timeBar');
@@ -477,6 +490,11 @@
 
     radarImage.src = src;
 
+    // ✅ Track first image load
+    if (imageLoadTime === null) {
+      imageLoadTime = Date.now() - TRIAL_START;
+    }
+
     imageViewLog.push({
       mode: 'static',
       time: slot.label,
@@ -492,7 +510,6 @@
     console.log('IMAGE_CHANGED_H3b:', { time: slot.label, index, src, timestamp: Date.now() - TRIAL_START });
   }
 
-  // error log za PNG (ako je problem putanja / naziv datoteke)
   function bindImageErrorLog() {
     const radarImage = document.getElementById('radarImage');
     if (!radarImage) return;
@@ -537,25 +554,54 @@
 
     const responseTime = Date.now() - TRIAL_START;
 
-    // Ispravi ključ po potrebi (ti si rekao da je točan A za "najjači" = 17–00)
+    // ✅ Točan odgovor
     const CORRECT_KEY = 'A';
     const isCorrect = (answer.value === CORRECT_KEY);
 
+    // ✅ KOMPLETAN DATA OBJECT
     const data = {
+      // Identifikatori
+      participantId: participantId,
+      participantCode: participantCode,
+      trialGroupId: trialGroupId,
+      startBlock: startBlock,
+
+      // Trial info
       trial: 'H3b',
-      trialGroupId,
+      trialType: 'HIGH',
+      taskDescription: 'Dual-task temporal search with digit recall',
+
+      // Timer
       timeout: didTimeout,
       timeLimitSeconds: TIME_LIMIT_SECONDS,
-      answer: {
-        value: answer.value,
-        correct: isCorrect,
-        responseTime: window.firstAnswerTime ? window.firstAnswerTime - TRIAL_START : null
-      },
+      timeRemaining: remainingSeconds,
+
+      // Answer
+      answer: answer.value,
+      correct: isCorrect,
+      correctKey: CORRECT_KEY,
+      firstAnswerTime: window.firstAnswerTime ? (window.firstAnswerTime - TRIAL_START) : null,
+
+      // Timing
       totalResponseTime: responseTime,
+
+      // Image viewing behavior
       imagesViewed: imageViewLog.length,
       uniqueImagesViewed: new Set(imageViewLog.map(v => v.index)).size,
       imageViewSequence: imageViewLog,
-      timestamp: new Date().toISOString()
+
+      // Metadata
+      timestamp: new Date().toISOString(),
+
+      // ✅ ET SYNC (Unix timestamps)
+      unixTimestamps: {
+        trialStart: TRIAL_START,
+        timerStart: timerStartTime,
+        imageLoaded: imageLoadTime ? (TRIAL_START + imageLoadTime) : null,
+        firstImageChange: imageViewLog.length > 1 ? (TRIAL_START + imageViewLog[1].timestamp) : null,
+        firstAnswer: window.firstAnswerTime ? window.firstAnswerTime : null,
+        submit: Date.now()
+      }
     };
 
     try {
@@ -567,7 +613,7 @@
       }
       allData.push(data);
       localStorage.setItem('experimentData', JSON.stringify(allData));
-      console.log('Uspješno spremljeno:', data);
+      console.log('Uspješno spremljeno (H3b):', data);
     } catch (error) {
       console.error('Greška pri spremanju u localStorage:', error);
       localStorage.setItem('experimentData', JSON.stringify([data]));
@@ -593,8 +639,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     bindImageErrorLog();
     buildTimeBar();
-    loadImage(0);      // prva slika: 17:00
-    startCountdown();  // timer kreće odmah
+    loadImage(0);
+    startCountdown();
   });
 </script>
 </body>

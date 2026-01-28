@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kraj istraživanja - DHMZ</title>
+  <title>Završetak istraživanja - DHMZ</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -22,16 +22,16 @@
       width: 100%;
       max-width: 720px;
       background-color: white;
-      padding: 25px;
+      padding: 26px;
       border-radius: 8px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
       text-align: center;
     }
 
-    .title{
+    .kicker{
       font-size: 14px;
       font-weight: 600;
       color: #3498db;
@@ -50,14 +50,8 @@
     .sub{
       font-size: 13px;
       color: #7f8c8d;
-      line-height: 1.5;
-    }
-
-    .actions{
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      margin-top: 8px;
+      line-height: 1.55;
+      white-space: pre-line;
     }
 
     .btn{
@@ -65,214 +59,96 @@
       border: none;
       border-radius: 6px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: background-color 0.3s;
       width: 100%;
-    }
-
-    .primary{
+      margin-top: 6px;
       background-color: #3498db;
-      color: white;
+      color: #fff;
     }
-    .primary:hover{ background-color: #2980b9; }
 
-    .secondary{
-      background-color: #ecf0f1;
-      color: #2c3e50;
-    }
-    .secondary:hover{ background-color: #dde4e8; }
+    .btn:hover{ background-color: #2980b9; }
 
     .btn:disabled{
-      background-color: #95a5a6 !important;
-      color: white !important;
+      background-color: #95a5a6;
       cursor: not-allowed;
     }
 
     .btn.success{
-      background-color: #27ae60 !important;
+      background-color: #27ae60;
       pointer-events: none;
-      color: white !important;
-    }
-
-    .mini{
-      font-size: 12px;
-      color: #7f8c8d;
-      line-height: 1.4;
-    }
-
-    @media (max-width: 520px){
-      .actions{ flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <div class="title">Kraj istraživanja</div>
+    <div class="kicker">Završetak glavnog dijela</div>
 
     <div class="message">
-Došli ste do kraja istraživanja.
+Završili ste glavni dio istraživanja.
 
 Hvala vam na sudjelovanju i uloženom vremenu.
     </div>
 
     <div class="sub">
-      Za spremanje rezultata kliknite <strong>Završi i preuzmi</strong>.
-      Nakon preuzimanja možete zatvoriti ovu stranicu.
+Prije konačnog završetka, molimo vas da ispunite još kratak završni upitnik.
+Upitnik se odnosi na opće podatke i vaše iskustvo.
     </div>
 
-    <div class="actions">
-      <button type="button" class="btn secondary" id="closeBtn">
-        Zatvori prozor
-      </button>
-
-      <button type="button" class="btn primary" id="finishBtn">
-        Završi i preuzmi
-      </button>
-    </div>
-
-    <div class="mini" id="statusLine"></div>
+    <button type="button" class="btn" id="continueBtn" onclick="goToQuestionnaire()">
+      Nastavi na završni upitnik
+    </button>
   </div>
 
   <script>
     const SCREEN_START = Date.now();
     const trialGroupId = localStorage.getItem('trialGroupId') || null;
-    const participantId = localStorage.getItem('participantId') || null;
-
-    const finishBtn = document.getElementById('finishBtn');
-    const closeBtn  = document.getElementById('closeBtn');
-    const statusLine = document.getElementById('statusLine');
-
-    function safeJsonParse(s, fallback){
-      try { return JSON.parse(s); } catch { return fallback; }
-    }
 
     function appendExperimentData(entry) {
-      const stored = localStorage.getItem('experimentData');
-      let allData = safeJsonParse(stored, []);
-      if (!Array.isArray(allData)) allData = [];
-      allData.push(entry);
-      localStorage.setItem('experimentData', JSON.stringify(allData));
-      return allData;
+      try {
+        let allData = [];
+        const stored = localStorage.getItem('experimentData');
+        if (stored) {
+          allData = JSON.parse(stored);
+          if (!Array.isArray(allData)) allData = [];
+        }
+        allData.push(entry);
+        localStorage.setItem('experimentData', JSON.stringify(allData));
+      } catch (e) {
+        console.error('Greška pri spremanju:', e);
+        localStorage.setItem('experimentData', JSON.stringify([entry]));
+      }
     }
 
-    function downloadBlob(filename, content, mime){
-      const blob = new Blob([content], { type: mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 500);
-    }
+    function goToQuestionnaire(){
+      const btn = document.getElementById('continueBtn');
+      btn.disabled = true;
+      btn.textContent = "Učitavam...";
+      btn.classList.add('success');
 
-    function csvEscape(v){
-      const s = (v === null || v === undefined) ? '' : String(v);
-      if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
-      return s;
-    }
-
-    function toCSV(rows, headers){
-      const head = headers.map(csvEscape).join(',');
-      const body = rows.map(r => headers.map(h => csvEscape(r[h])).join(',')).join('\n');
-      return head + '\n' + body + '\n';
-    }
-
-    function buildSummary(allData){
-      // sažetak po tipu (trial) + counts + prosječno vrijeme ako postoji
-      const map = new Map();
-
-      allData.forEach(ev => {
-        const key = ev.trial || 'UNKNOWN';
-        if (!map.has(key)) map.set(key, { trial: key, count: 0, avgTimeMs: 0, _sum: 0, _n: 0 });
-        const row = map.get(key);
-        row.count += 1;
-
-        // pokušaj pronaći vrijeme
-        const t = (typeof ev.totalResponseTime === 'number') ? ev.totalResponseTime :
-                  (typeof ev.responseTime === 'number') ? ev.responseTime : null;
-        if (t !== null) { row._sum += t; row._n += 1; }
-      });
-
-      const out = Array.from(map.values()).map(r => {
-        const avg = r._n ? Math.round(r._sum / r._n) : '';
-        return { trial: r.trial, count: r.count, avgTimeMs: avg };
-      });
-
-      // stabilan redoslijed
-      out.sort((a,b) => String(a.trial).localeCompare(String(b.trial)));
-      return out;
-    }
-
-    function buildEventsCSV(allData){
-      // “flatten” osnovnih polja + raw JSON
-      return allData.map(ev => ({
-        timestamp: ev.timestamp || '',
-        trialGroupId: ev.trialGroupId || trialGroupId || '',
-        participantId: ev.participantId || participantId || '',
-        trial: ev.trial || '',
-        type: ev.type || '',
-        tlxBlock: ev.tlxBlock || '',
-        timeout: (typeof ev.timeout === 'boolean') ? ev.timeout : '',
-        timeLimitSeconds: (typeof ev.timeLimitSeconds === 'number') ? ev.timeLimitSeconds : '',
-        responseTime: (typeof ev.responseTime === 'number') ? ev.responseTime : '',
-        totalResponseTime: (typeof ev.totalResponseTime === 'number') ? ev.totalResponseTime : '',
-        raw: JSON.stringify(ev)
-      }));
-    }
-
-    function finishStudyAndExport(){
-      finishBtn.disabled = true;
-      finishBtn.textContent = "Pripremam...";
-      finishBtn.classList.add('success');
-
-      const endEvent = {
-        trial: 'END',
-        participantId: participantId,
+      // Zabilježi "end-of-main" marker (bez exporta)
+      appendExperimentData({
+        trial: 'END_MAIN',
         trialGroupId: trialGroupId,
         totalResponseTime: Date.now() - SCREEN_START,
         timestamp: new Date().toISOString()
-      };
+      });
 
-      const allData = appendExperimentData(endEvent);
-
-      // 1) JSON (cijeli raw log)
-      const jsonPayload = JSON.stringify(allData, null, 2);
-      downloadBlob('data.json', jsonPayload, 'application/json;charset=utf-8');
-
-      // 2) summary.csv
-      const summaryRows = buildSummary(allData);
-      const summaryCsv = toCSV(summaryRows, ['trial','count','avgTimeMs']);
-      downloadBlob('summary.csv', summaryCsv, 'text/csv;charset=utf-8');
-
-      // 3) events.csv
-      const eventRows = buildEventsCSV(allData);
-      const eventsCsv = toCSV(eventRows, [
-        'timestamp','trialGroupId','participantId','trial','type','tlxBlock',
-        'timeout','timeLimitSeconds','responseTime','totalResponseTime','raw'
-      ]);
-      downloadBlob('events.csv', eventsCsv, 'text/csv;charset=utf-8');
-
-      statusLine.textContent = "Preuzimanje je pokrenuto (3 datoteke). Nakon toga možete zatvoriti stranicu.";
-      finishBtn.textContent = "Preuzeto";
+      setTimeout(() => {
+        window.location.href = 'upitnik.html';
+      }, 250);
     }
 
-    function tryClose(){
-      window.close();
-    }
-
-    // === Bind events (bez inline onclick) ===
-    closeBtn.addEventListener('click', tryClose);
-    finishBtn.addEventListener('click', finishStudyAndExport);
-
+    // Enter = Nastavi
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !finishBtn.disabled) finishBtn.click();
+      if (e.key === 'Enter') {
+        const btn = document.getElementById('continueBtn');
+        if (!btn.disabled) btn.click();
+      }
     });
-
-    console.log('SCREEN_START_END:', SCREEN_START, 'trialGroupId:', trialGroupId, 'participantId:', participantId);
   </script>
+
 </body>
 </html>

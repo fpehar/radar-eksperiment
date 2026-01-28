@@ -275,10 +275,22 @@
   const TRIAL_START = Date.now();
   const urlParams = new URLSearchParams(window.location.search);
   const trial = urlParams.get('trial') || 'unknown';
-  const trialGroupId = localStorage.getItem('trialGroupId') || null;
+  
+  // ✅ DOHVATI SVE ID-EVE
+  const participantId = localStorage.getItem('participantId');
+  const participantCode = localStorage.getItem('participantCode');
+  const trialGroupId = localStorage.getItem('trialGroupId');
+  const startBlock = localStorage.getItem('startBlock');
+
+  // ✅ PROVJERA
+  if (!participantId || !trialGroupId) {
+    alert('Nedostaju podaci o identifikaciji. Bit ćete preusmjereni na početak.');
+    window.location.href = 'index.html';
+  }
 
   // korisnik mora barem jednom pomaknuti svaki slider
   const answeredMap = { q1:false, q2:false, q3:false, q4:false, q5:false, q6:false };
+  let firstInteractionTime = null;
 
   function updateProgress() {
     const answered = Object.values(answeredMap).filter(Boolean).length;
@@ -289,6 +301,12 @@
   function bindSlider(id, qKey) {
     const slider = document.getElementById(id);
     slider.addEventListener('change', function () {
+      // ✅ Track first interaction
+      if (firstInteractionTime === null) {
+        firstInteractionTime = Date.now();
+        console.log('FIRST_INTERACTION_NASA_HIGH:', firstInteractionTime - TRIAL_START);
+      }
+
       answeredMap[qKey] = true;
       updateProgress();
     });
@@ -311,12 +329,20 @@
     submitBtn.textContent = "Spremanje...";
     submitBtn.classList.add('success');
 
+    // ✅ KOMPLETAN DATA OBJECT
     const data = {
+      // Identifikatori
+      participantId: participantId,
+      participantCode: participantCode,
+      trialGroupId: trialGroupId,
+      startBlock: startBlock,
+      
+      // Trial info
       trial: trial,
       type: 'NASA_TLX',
       tlxBlock: 'HIGH',
-      trialGroupId: trialGroupId,
 
+      // NASA-TLX dimenzije
       mentalDemand: parseInt(document.getElementById('q1').value, 10),
       physicalDemand: parseInt(document.getElementById('q2').value, 10),
       temporalDemand: parseInt(document.getElementById('q3').value, 10),
@@ -324,8 +350,17 @@
       effort: parseInt(document.getElementById('q5').value, 10),
       frustration: parseInt(document.getElementById('q6').value, 10),
 
+      // Timing
       responseTime: Date.now() - TRIAL_START,
-      timestamp: new Date().toISOString()
+      firstInteractionTime: firstInteractionTime ? (firstInteractionTime - TRIAL_START) : null,
+      timestamp: new Date().toISOString(),
+
+      // ✅ ET SYNC (Unix timestamps)
+      unixTimestamps: {
+        trialStart: TRIAL_START,
+        firstInteraction: firstInteractionTime ? firstInteractionTime : null,
+        submit: Date.now()
+      }
     };
 
     try {

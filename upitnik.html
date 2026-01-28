@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sociodemografski upitnik i informirani pristanak</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body{
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    .container{
+      width: 100%;
+      max-width: 850px;
+      background: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .title{
+      font-size: 22px;
+      font-weight: 700;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+.intro{
+  font-size: 16px;
+  color: #2c3e50;
+  line-height: 1.65;
+  text-align: left;
+  margin-bottom: 18px;
+  white-space: pre-line;
+}
+
+.long-text{
+  font-size: 16px;
+  color: #2c3e50;
+  line-height: 1.7;
+  white-space: pre-line;
+  background: #f8f9fa;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+    .section{
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 2px solid #ecf0f1;
+    }
+
+    .section h2{
+      font-size: 14px;
+      font-weight: 700;
+      color: #3498db;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+
+    .q{
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #ecf0f1;
+    }
+
+    .q:last-child{ border-bottom: none; padding-bottom: 0; }
+
+    .q-title{
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c3e50;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .required{
+      color: #e74c3c;
+      font-weight: 800;
+      margin-left: 6px;
+    }
+
+    .opts{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .opt{
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .2s;
+      background: #fff;
+    }
+
+    .opt:hover{
+      border-color: #3498db;
+      background: #f8f9fa;
+    }
+
+    .opt input{
+      margin-top: 2px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .opt label{
+      cursor: pointer;
+      font-size: 14px;
+      color: #2c3e50;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .grid{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .text-input{
+      width: 100%;
+      padding: 12px 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .text-input:focus{
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+    }
+
+    .hint{
+      font-size: 13px;
+      color: #7f8c8d;
+      font-style: italic;
+      line-height: 1.45;
+      padding: 10px;
+      background: #f8f9fa;
+      border-left: 3px solid #95a5a6;
+      border-radius: 4px;
+      margin-top: 8px;
+      white-space: pre-line;
+    }
+
+    .actions{
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn{
+      width: 100%;
+      padding: 14px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color .2s;
+    }
+    .btn:hover{ background-color: #2980b9; }
+
+    .btn:disabled{
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .btn.success{
+      background-color: #27ae60;
+      pointer-events: none;
+    }
+
+    .error{
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 2px solid #e74c3c;
+      background: #fff5f5;
+      color: #c0392b;
+      font-size: 14px;
+      font-weight: 700;
+    }
+  
+    .q.missing{ border:2px solid #e74c3c; border-radius:8px; padding:12px; }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="title">Sociodemografski upitnik i informirani pristanak</div>
+
+    <div class="intro">Poštovani/poštovana,
+pred Vama se nalazi kratak sociodemografski upitnik. Pitanja se odnose na osnovne informacije poput 
+dobi, spola i obrazovanja, a služe isključivo u svrhu statističke obrade i bolje interpretacije rezultata 
+istraživanja.
+ Ispunjavanje upitnika traje kratko.
+Svi prikupljeni podaci su anonimni i bit će korišteni isključivo u znanstveno-istraživačke svrhe. Podaci 
+se obrađuju povjerljivo, u skladu s važećim propisima o zaštiti osobnih podataka. Rezultati će biti 
+prikazani isključivo na grupnoj razini, bez mogućnosti identifikacije pojedinaca.</div>
+
+    <div class="section">
+      <h2>Informirani pristanak</h2>
+
+      <div class="long-text">Molimo Vas da prije nastavka pažljivo pročitate sljedeće informacije.
+Cilj ovog istraživanja je ispitati određene psihološke karakteristike sudionika te njihov odnos s 
+odabranim varijablama.  Sudjelovanje u istraživanju uključuje izvođenje mjernih postupaka koji su 
+osmišljeni za prikupljanje potrebnih podataka. Cijeli proces traje ograničeno vrijeme i ne uključuje 
+neugodne, štetne ili invazivne postupke. Istraživanje ne uključuje Azičke intervencije niti izlaže 
+sudionike rizicima. 
+Sudjelovanje u ovom istraživanju je u potpunosti dobrovoljno. Imate pravo odbiti sudjelovanje ili se 
+povući iz istraživanja u bilo kojem trenutku, bez obveze navođenja razloga i bez ikakvih negativnih 
+posljedica. Vaša odluka o sudjelovanju ili povlačenju neće utjecati na Vaša prava, akademski status niti 
+odnos s institucijom ili istraživačima.
+Svi podaci prikupljeni u okviru ovog istraživanja tretiraju se kao povjerljivi. Istraživanje je osmišljeno na 
+način da se ne prikupljaju osobni identiAkacijski podaci koji bi omogućili izravnu ili neizravnu 
+identiAkaciju sudionika. Prikupljeni podaci koristit će se isključivo u znanstvene i obrazovne svrhe, 
+uključujući izradu znanstvenih radova i akademskih izvještaja. Rezultati će biti prikazani isključivo na 
+razini skupine, čime je u potpunosti osigurana anonimnost sudionika.
+Podaci se pohranjuju na siguran način, uz primjenu odgovarajućih tehničkih i organizacijskih mjera 
+zaštite. Pristup podacima imaju isključivo članovi istraživačkog tima. Podaci neće biti dijeljeni s trećim 
+osobama niti korišteni u druge svrhe osim onih navedenih u ovom istraživanju, a njihova obrada provodi 
+se u skladu s važećim etičkim načelima i propisima o zaštiti osobnih podataka.
+Ukoliko tijekom ili nakon sudjelovanja imate pitanja o istraživanju, postupcima ili svojim pravima kao 
+sudionika, imate pravo zatražiti dodatne informacije od istraživača. 
+Nastavkom sudjelovanja u ovom istraživanju potvrđujete da ste pročitali i razumjeli navedene 
+informacije, da ste upoznati sa svrhom i načinom provođenja istraživanja, da ste svjesni svojih prava 
+kao sudionika te dajete svoj informirani pristanak za sudjelovanje u istraživanju.</div>
+
+<form id="socioForm">
+  <!-- Q1 - OBVEZNO -->
+  <div class="q">
+    <div class="q-title">Pristajete li da se prikupljeni podaci koriste u istraživanju?<span class="required">*</span></div>
+    <div class="opts" role="radiogroup" aria-label="Informirani pristanak">
+      <div class="opt">
+        <input type="radio" id="q1_da" name="q1" value="Da" required>
+        <label for="q1_da">Da</label>
+      </div>
+      <div class="opt">
+        <input type="radio" id="q1_ne" name="q1" value="Ne" required>
+        <label for="q1_ne">Ne</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 - OBVEZNO -->
+  <div class="q">
+    <div class="q-title">Sudjelovanje je moguće samo osobama starijim od 18 godina. Molimo Vas da potvrdite ispunjavanje uvjeta.<span class="required">*</span></div>
+    <div class="opts" role="radiogroup" aria-label="18+ potvrda">
+      <div class="opt">
+        <input type="radio" id="q2_da" name="q2" value="Da, imam 18 godina ili više" required>
+        <label for="q2_da">Da, imam 18 godina ili više</label>
+      </div>
+      <div class="opt">
+        <input type="radio" id="q2_ne" name="q2" value="Ne, nisam punoljetan/a" required>
+        <label for="q2_ne">Ne, nisam punoljetan/a</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Sociodemografski upitnik</h2>
+
+    <!-- Q3 (spol) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Označite svoj spol:</div>
+      <div class="opts">
+        <div class="opt">
+          <input type="radio" id="q3_m" name="q3" value="Muško">
+          <label for="q3_m">Muško</label>
+        </div>
+        <div class="opt">
+          <input type="radio" id="q3_z" name="q3" value="Žensko">
+          <label for="q3_z">Žensko</label>
+        </div>
+        <div class="opt">
+          <input type="radio" id="q3_n" name="q3" value="Ne želim se izjasniti">
+          <label for="q3_n">Ne želim se izjasniti</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 (dob) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Koliko imate godina?</div>
+      <div class="grid">
+        <input class="text-input" type="text" id="q4" name="q4" inputmode="numeric" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Q5 (obrazovanje) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Koji je Vaš najviši završeni stupanj obrazovanja?</div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q5_1" name="q5" value="Osnova škola"><label for="q5_1">Osnova škola</label></div>
+        <div class="opt"><input type="radio" id="q5_2" name="q5" value="Srednja škola"><label for="q5_2">Srednja škola</label></div>
+        <div class="opt"><input type="radio" id="q5_3" name="q5" value="Prijediplomski studij"><label for="q5_3">Prijediplomski studij</label></div>
+        <div class="opt"><input type="radio" id="q5_4" name="q5" value="Diplomski studij"><label for="q5_4">Diplomski studij</label></div>
+        <div class="opt"><input type="radio" id="q5_5" name="q5" value="Integrirani studij"><label for="q5_5">Integrirani studij</label></div>
+        <div class="opt"><input type="radio" id="q5_6" name="q5" value="Doktorski studij"><label for="q5_6">Doktorski studij</label></div>
+      </div>
+    </div>
+
+    <!-- Q6 (područje studija) - OPCIONALNO -->
+    <div class="q" id="q6_wrap">
+      <div class="q-title">
+        Kojem području pripada najviša završena razina studija? (označite jedan odgovor koji je najbliži)
+      </div>
+      <div class="opts">
+        <select id="q6" name="q6">
+          <option value="" disabled selected>— Odaberite —</option>
+          <option value="Prirodne znanosti">Prirodne znanosti</option>
+          <option value="Tehničke znanosti">Tehničke znanosti</option>
+          <option value="Biomedicina i zdravstvo">Biomedicina i zdravstvo</option>
+          <option value="Biotehničke znanosti">Biotehničke znanosti</option>
+          <option value="Društvene znanosti">Društvene znanosti</option>
+          <option value="Humanističke znanosti">Humanističke znanosti</option>
+          <option value="Interdisciplinarne znanosti">Interdisciplinarne znanosti</option>
+          <option value="Ne odnosi se na mene">Ne odnosi se na mene</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Q7 (digitalni uređaji) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Koliko često koristite digitalne uređaje (npr. računalo, pametni telefon, tablet) u svakodnevnom životu?</div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q7_1" name="q7" value="Rijetko (nekoliko puta mjesečno)"><label for="q7_1">Rijetko (nekoliko puta mjesečno)</label></div>
+        <div class="opt"><input type="radio" id="q7_2" name="q7" value="Povremeno (nekoliko puta tjedno)"><label for="q7_2">Povremeno (nekoliko puta tjedno)</label></div>
+        <div class="opt"><input type="radio" id="q7_3" name="q7" value="Često (svakodnevno)"><label for="q7_3">Često (svakodnevno)</label></div>
+        <div class="opt"><input type="radio" id="q7_4" name="q7" value="Vrlo često (više sati dnevno)"><label for="q7_4">Vrlo često (više sati dnevno)</label></div>
+      </div>
+    </div>
+
+    <!-- Q8 (digitalna pismenost) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Kako biste procijenili svoju razinu digitalne pismenosti?</div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q8_1" name="q8" value="Vrlo niska"><label for="q8_1">Vrlo niska</label></div>
+        <div class="opt"><input type="radio" id="q8_2" name="q8" value="Niska"><label for="q8_2">Niska</label></div>
+        <div class="opt"><input type="radio" id="q8_3" name="q8" value="Osrednja"><label for="q8_3">Osrednja</label></div>
+        <div class="opt"><input type="radio" id="q8_4" name="q8" value="Visoka"><label for="q8_4">Visoka</label></div>
+        <div class="opt"><input type="radio" id="q8_5" name="q8" value="Vrlo visoka"><label for="q8_5">Vrlo visoka</label></div>
+      </div>
+    </div>
+
+    <!-- Q9 (meteorološke informacije) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">
+        Koliko često pratite meteorološke informacije o aktualnom vremenu ili vremenskoj prognozi
+        (npr. temperatura, oblačnost, kiša/sunce, kratkoročna prognoza)?
+      </div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q9_0" name="q9" value="Nikada"><label for="q9_0">Nikada</label></div>
+        <div class="opt"><input type="radio" id="q9_1" name="q9" value="Rijetko (nekoliko puta godišnje)"><label for="q9_1">Rijetko (nekoliko puta godišnje)</label></div>
+        <div class="opt"><input type="radio" id="q9_2" name="q9" value="Povremeno (nekoliko puta mjesečno)"><label for="q9_2">Povremeno (nekoliko puta mjesečno)</label></div>
+        <div class="opt"><input type="radio" id="q9_3" name="q9" value="Često (nekoliko puta tjedno)"><label for="q9_3">Često (nekoliko puta tjedno)</label></div>
+        <div class="opt"><input type="radio" id="q9_4" name="q9" value="Svakodnevno"><label for="q9_4">Svakodnevno</label></div>
+      </div>
+    </div>
+
+    <!-- Q10 (specifični meteorološki podaci) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">
+        Koliko često koristite specifične meteorološke podatke ili prikaze, poput radarskih i satelitskih snimki, podataka o oborinama, vjetru, temperaturi mora, visini snijega, UV indeksu, grmljavinskoj aktivnosti ili sličnim informacijama?
+      </div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q10_0" name="q10" value="Nikada"><label for="q10_0">Nikada</label></div>
+        <div class="opt"><input type="radio" id="q10_1" name="q10" value="Rijetko (nekoliko puta godišnje)"><label for="q10_1">Rijetko (nekoliko puta godišnje)</label></div>
+        <div class="opt"><input type="radio" id="q10_2" name="q10" value="Sezonski (u određenim razdobljima godine)"><label for="q10_2">Sezonski (u određenim razdobljima godine)</label></div>
+        <div class="opt"><input type="radio" id="q10_3" name="q10" value="Povremeno (nekoliko puta mjesečno)"><label for="q10_3">Povremeno (nekoliko puta mjesečno)</label></div>
+        <div class="opt"><input type="radio" id="q10_4" name="q10" value="Često (nekoliko puta tjedno)"><label for="q10_4">Često (nekoliko puta tjedno)</label></div>
+        <div class="opt"><input type="radio" id="q10_5" name="q10" value="Svakodnevno"><label for="q10_5">Svakodnevno</label></div>
+      </div>
+    </div>
+
+    <!-- Q11 (razumijevanje meteoroloških karata) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Kako biste procijenili svoje razumijevanje meteoroloških karata, prikaza i podataka?</div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q11_1" name="q11" value="Vrlo loše"><label for="q11_1">Vrlo loše</label></div>
+        <div class="opt"><input type="radio" id="q11_2" name="q11" value="Loše"><label for="q11_2">Loše</label></div>
+        <div class="opt"><input type="radio" id="q11_3" name="q11" value="Osrednje"><label for="q11_3">Osrednje</label></div>
+        <div class="opt"><input type="radio" id="q11_4" name="q11" value="Dobro"><label for="q11_4">Dobro</label></div>
+        <div class="opt"><input type="radio" id="q11_5" name="q11" value="Vrlo dobro"><label for="q11_5">Vrlo dobro</label></div>
+      </div>
+    </div>
+
+    <!-- Q12 (pomagala za vid) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Koristite li pomagala za korekciju vida?</div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q12_1" name="q12" value="Ne"><label for="q12_1">Ne koristim pomagala</label></div>
+        <div class="opt"><input type="radio" id="q12_2" name="q12" value="Naočale"><label for="q12_2">Da, koristim naočale</label></div>
+        <div class="opt"><input type="radio" id="q12_3" name="q12" value="Leće"><label for="q12_3">Da, koristim kontaktne leće</label></div>
+        <div class="opt"><input type="radio" id="q12_4" name="q12" value="Oboje"><label for="q12_4">Kombiniram naočale i kontaktne leće</label></div>
+        <div class="opt"><input type="radio" id="q12_5" name="q12" value="Operacija"><label for="q12_5">Ne, imao/la sam lasersku ili drugu operaciju vida</label></div>
+      </div>
+    </div>
+
+    <!-- Q13 (kvaliteta vida) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">
+        Kako biste ocijenili kvalitetu svog vida <strong>u ovom trenutku</strong> (uz korištenje pomagala, ako ih nosite)?
+      </div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q13_1" name="q13" value="Izrazito loša"><label for="q13_1">Izrazito loša</label></div>
+        <div class="opt"><input type="radio" id="q13_2" name="q13" value="Loša"><label for="q13_2">Loša</label></div>
+        <div class="opt"><input type="radio" id="q13_3" name="q13" value="Zadovoljavajuća"><label for="q13_3">Zadovoljavajuća</label></div>
+        <div class="opt"><input type="radio" id="q13_4" name="q13" value="Dobra"><label for="q13_4">Dobra</label></div>
+        <div class="opt"><input type="radio" id="q13_5" name="q13" value="Izvrsna"><label for="q13_5">Izvrsna (oštar vid)</label></div>
+      </div>
+    </div>
+
+    <!-- Q14 (poteškoće s bojama) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">Imate li poteškoća s razlikovanjem boja (npr. daltonizam)?</div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q14_1" name="q14" value="Da"><label for="q14_1">Da</label></div>
+        <div class="opt"><input type="radio" id="q14_2" name="q14" value="Ne"><label for="q14_2">Ne</label></div>
+        <div class="opt"><input type="radio" id="q14_3" name="q14" value="Nisam siguran"><label for="q14_3">Nisam siguran/na</label></div>
+      </div>
+    </div>
+
+    <!-- Q15 (neurološki/psihijatrijski poremećaji) - OPCIONALNO -->
+    <div class="q">
+      <div class="q-title">
+        Imate li dijagnosticiran neurološki ili psihijatrijski poremećaj koji može utjecati na pažnju, percepciju ili kognitivne procese (npr. ADHD, spektar autizma, disleksija i sl.)?
+      </div>
+      <div class="opts">
+        <div class="opt"><input type="radio" id="q15_1" name="q15" value="Da"><label for="q15_1">Da</label></div>
+        <div class="opt"><input type="radio" id="q15_2" name="q15" value="Ne"><label for="q15_2">Ne</label></div>
+        <div class="opt"><input type="radio" id="q15_3" name="q15" value="Ne želim odgovoriti"><label for="q15_3">Ne želim odgovoriti</label></div>
+      </div>
+    </div>
+
+    <div class="error" id="errorBox">Molimo ispunite sva obavezna pitanja prije nastavka.</div>
+
+    <div class="actions">
+      <button type="submit" class="btn" id="submitBtn">Spremi i nastavi</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  const SCREEN_START = Date.now();
+
+  const trialGroupId = localStorage.getItem('trialGroupId') || null;
+  const participantId = localStorage.getItem('participantId') || null;
+  const participantCode = localStorage.getItem('participantCode') || null;
+  const startBlock = localStorage.getItem('startBlock') || localStorage.getItem('assignedBlock') || null;
+
+  // SAMO Q1 i Q2 su obvezna
+  const requiredNames = ["q1", "q2"];
+
+  function getValue(name){
+    const els = document.querySelectorAll(`[name="${name}"]`);
+    if (!els || els.length === 0) return '';
+
+    // radio
+    if (els[0].type === 'radio'){
+      const checked = document.querySelector(`[name="${name}"]:checked`);
+      return checked ? checked.value : '';
+    }
+
+    // select / text / textarea
+    const el = els[0];
+    if (el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') return (el.value || '').trim();
+    if (el.type === 'text' || el.type === 'number') return (el.value || '').trim();
+
+    return (el.value || '').trim();
+  }
+
+  function isAnswered(name){
+    return getValue(name) !== '';
+  }
+
+  function appendExperimentData(entry){
+    try {
+      let allData = [];
+      const storedData = localStorage.getItem('experimentData');
+      if (storedData) {
+        allData = JSON.parse(storedData);
+        if (!Array.isArray(allData)) allData = [];
+      }
+      allData.push(entry);
+      localStorage.setItem('experimentData', JSON.stringify(allData));
+      return true;
+    } catch (e) {
+      console.error('Greška pri spremanju u localStorage:', e);
+      try {
+        localStorage.setItem('experimentData', JSON.stringify([entry]));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  function updateProgress(){
+    const answered = requiredNames.filter(isAnswered).length;
+    const total = requiredNames.length;
+
+    const progressEl = document.getElementById('progress');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (progressEl) progressEl.textContent = `Odgovoreno ${answered}/${total}`;
+    if (submitBtn) submitBtn.disabled = (answered !== total);
+  }
+
+  function markMissingUI(){
+    document.querySelectorAll('.q.missing').forEach(el => el.classList.remove('missing'));
+
+    let firstMissing = null;
+
+    requiredNames.forEach((name) => {
+      if (!isAnswered(name)) {
+        const el = document.querySelector(`[name="${name}"]`);
+        const qBlock = el ? el.closest('.q') : null;
+        if (qBlock) {
+          qBlock.classList.add('missing');
+          if (!firstMissing) firstMissing = qBlock;
+        }
+      }
+    });
+
+    if (firstMissing) firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return firstMissing;
+  }
+
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.name && requiredNames.includes(e.target.name)) updateProgress();
+  });
+
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.name && requiredNames.includes(e.target.name)) updateProgress();
+  });
+
+  updateProgress();
+
+  document.getElementById('socioForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const missing = requiredNames.filter(n => !isAnswered(n));
+    if (missing.length) {
+      markMissingUI();
+      alert('Molimo odgovorite na sva obavezna pitanja (označena zvjezdicom).');
+      updateProgress();
+      return;
+    }
+
+    // UKLONJENA VALIDACIJA DOBI (nije obvezna)
+    // Ako želiš provjeriti dob samo ako je unesena:
+    const ageRaw = getValue('q4');
+    if (ageRaw) {
+      const age = parseInt(ageRaw, 10);
+      if (!Number.isFinite(age) || age < 0) {
+        alert('Molimo unesite ispravnu dob (broj).');
+        const el = document.querySelector('#q4');
+        if (el) el.focus();
+        return;
+      }
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Spremanje...';
+      submitBtn.classList.add('success');
+    }
+
+    const data = {
+      trial: 'SOCIODEMO',
+      type: 'QUESTIONNAIRE',
+
+      trialGroupId,
+      participantId,
+      participantCode,
+      startBlock,
+
+      // Odgovori po redu (svi kao string osim q4 koji je broj ako postoji):
+      q1: getValue('q1'),
+      q2: getValue('q2'),
+      q3: getValue('q3') || null,
+      q4: getValue('q4') ? parseInt(getValue('q4'), 10) : null,
+      q5: getValue('q5') || null,
+      q6: getValue('q6') || null,
+      q7: getValue('q7') || null,
+      q8: getValue('q8') || null,
+      q9: getValue('q9') || null,
+      q10: getValue('q10') || null,
+      q11: getValue('q11') || null,
+      q12: getValue('q12') || null,
+      q13: getValue('q13') || null,
+      q14: getValue('q14') || null,
+      q15: getValue('q15') || null,
+
+      totalResponseTime: Date.now() - SCREEN_START,
+      timestamp: new Date().toISOString()
+    };
+
+    const ok = appendExperimentData(data);
+    if (!ok) {
+      alert('Nažalost nije moguće spremiti podatke (localStorage). Molimo javite istraživaču.');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Spremi i nastavi';
+        submitBtn.classList.remove('success');
+      }
+      return;
+    }
+
+    localStorage.setItem('socioDone', '1');
+
+    // odmah redirect (localStorage je sinkron, nema potrebe za timeout)
+    window.location.href = 'close.html';
+  });
+</script>
+
+</body>
+</html>

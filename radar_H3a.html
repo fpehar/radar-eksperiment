@@ -179,7 +179,7 @@
             <div class="question-container">
 
                 <div class="question-section">
-                    <div class="question-number">H3: Pročitajte i postupite prema uputi (1/3)</div>
+                    <div class="question-number">Pročitajte i postupite prema uputi (1/3)</div>
                     <div class="question-text">
                         Pažljivo poslušajte zvučni zapis i <strong>ZAPAMTITE niz brojeva</strong> koje ćete čuti u nastavku.<br /><br />
                         <br />Spremni?
@@ -205,11 +205,16 @@
     const TRIAL_START = Date.now();
     console.log('TRIAL_START_H3a:', TRIAL_START);
 
-    // Ako već koristiš trialGroupId, zadrži logiku; ovdje samo čitanje:
-    let trialGroupId = localStorage.getItem('trialGroupId');
+    // ✅ DOHVATI SVE ID-EVE
+    const participantId = localStorage.getItem('participantId') || null;
+    const participantCode = localStorage.getItem('participantCode') || null;
+    const trialGroupId = localStorage.getItem('trialGroupId') || null;
+    const startBlock = localStorage.getItem('startBlock') || null;
+
+    // ✅ Provjera
     if (!trialGroupId) {
-        trialGroupId = 'TG_' + Date.now();
-        localStorage.setItem('trialGroupId', trialGroupId);
+        alert('Nedostaje ID sesije (trialGroupId). Vraćam na početak istraživanja.');
+        window.location.href = 'index.html';
     }
 
     // ✅ Audio datoteka
@@ -227,7 +232,8 @@
         startBtn.textContent = "Reprodukcija...";
         startBtn.classList.add('success');
 
-        const audioStartTs = Date.now() - TRIAL_START;
+        const audioStartTime = Date.now();
+        const audioStartTs = audioStartTime - TRIAL_START;
         console.log('AUDIO_START_H3a:', audioStartTs);
 
         audio.currentTime = 0;
@@ -238,17 +244,43 @@
         audio.addEventListener('ended', function onEnded() {
             audio.removeEventListener('ended', onEnded);
 
-            const audioEndTs = Date.now() - TRIAL_START;
+            const audioEndTime = Date.now();
+            const audioEndTs = audioEndTime - TRIAL_START;
+            const audioDuration = audioEndTime - audioStartTime;
+            
             console.log('AUDIO_END_H3a:', audioEndTs);
+            console.log('AUDIO_DURATION_H3a:', audioDuration);
 
-            // (Opcionalno) spremi H3a podatke u isti experimentData kao i ostalo
+            // ✅ KOMPLETAN DATA OBJECT
             const data = {
-                trial: 'H3a',
+                // Identifikatori
+                participantId: participantId,
+                participantCode: participantCode,
                 trialGroupId: trialGroupId,
+                startBlock: startBlock,
+                
+                // Trial info
+                trial: 'H3a',
+                trialType: 'HIGH',
+                taskDescription: 'Dual-task audio instruction - digit sequence',
+                
+                // Audio tracking
                 audioFile: 'audio/h3_7395.m4a',
                 audioStart: audioStartTs,
                 audioEnd: audioEndTs,
-                timestamp: new Date().toISOString()
+                audioDuration: audioDuration,
+                digitSequence: '7-3-9-5', // ✅ Reference
+                
+                // Metadata
+                timestamp: new Date().toISOString(),
+                
+                // ✅ ET SYNC (Unix timestamps)
+                unixTimestamps: {
+                    trialStart: TRIAL_START,
+                    audioStart: audioStartTime,
+                    audioEnd: audioEndTime,
+                    submit: Date.now()
+                }
             };
 
             try {
@@ -262,7 +294,7 @@
 
                 allData.push(data);
                 localStorage.setItem('experimentData', JSON.stringify(allData));
-                console.log('Uspješno spremljeno:', data);
+                console.log('Uspješno spremljeno (H3a):', data);
             } catch (error) {
                 console.error('Greška pri spremanju u localStorage:', error);
                 localStorage.setItem('experimentData', JSON.stringify([data]));
@@ -275,7 +307,7 @@
         });
     }
 
-    // (Opcionalno) Enter / Space pokreće reprodukciju
+    // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if ((e.key === 'Enter' || e.key === ' ') && !started) {
             e.preventDefault();
@@ -283,5 +315,6 @@
         }
     });
 </script>
+
 </body>
 </html>
