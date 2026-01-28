@@ -1,0 +1,822 @@
+[
+  {
+    "trial": "START",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "startBlock": "LOW",
+    "timestamp": "2026-01-28T22:50:58.513Z",
+    "totalResponseTime": 2017
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "L1",
+    "trialType": "LOW",
+    "taskDescription": "Spatial identification",
+    "answer": "B",
+    "correct": true,
+    "correctKey": "B",
+    "responseTime": 15133,
+    "firstSelectionTime": 14116,
+    "imageLoaded": true,
+    "imagePath": "img/kompozit_20260125_1800.png",
+    "timestamp": "2026-01-28T22:51:13.964Z",
+    "unixTimestamps": {
+      "trialStart": 1769640658831,
+      "imageLoaded": 1769640658838,
+      "firstSelection": 1769640672947,
+      "submit": 1769640673964
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "L2",
+    "trialType": "LOW",
+    "taskDescription": "Temporal search",
+    "answer": "A",
+    "correct": true,
+    "correctKey": "A",
+    "responseTime": 29944,
+    "firstSelectionTime": 29011,
+    "imagesViewed": 7,
+    "uniqueImagesViewed": 7,
+    "imageViewSequence": [
+      {
+        "time": "17:00",
+        "index": 0,
+        "src": "img/kompozit_20260125_1700.png",
+        "timestamp": 4
+      },
+      {
+        "time": "18:00",
+        "index": 1,
+        "src": "img/kompozit_20260125_1800.png",
+        "timestamp": 17310
+      },
+      {
+        "time": "19:00",
+        "index": 2,
+        "src": "img/kompozit_20260125_1900.png",
+        "timestamp": 19293
+      },
+      {
+        "time": "20:00",
+        "index": 3,
+        "src": "img/kompozit_20260125_2000.png",
+        "timestamp": 20793
+      },
+      {
+        "time": "21:00",
+        "index": 4,
+        "src": "img/kompozit_20260125_2100.png",
+        "timestamp": 21843
+      },
+      {
+        "time": "22:00",
+        "index": 5,
+        "src": "img/kompozit_20260125_2200.png",
+        "timestamp": 23093
+      },
+      {
+        "time": "23:00",
+        "index": 6,
+        "src": "img/kompozit_20260125_2300.png",
+        "timestamp": 25360
+      }
+    ],
+    "timestamp": "2026-01-28T22:51:44.431Z",
+    "unixTimestamps": {
+      "trialStart": 1769640674487,
+      "imageLoaded": 1769640674491,
+      "firstImageChange": 1769640691797,
+      "firstSelection": 1769640703498,
+      "submit": 1769640704431
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "unknown",
+    "type": "NASA_TLX",
+    "tlxBlock": "LOW",
+    "mentalDemand": 1,
+    "physicalDemand": 0,
+    "temporalDemand": 0,
+    "performance": 2,
+    "effort": 2,
+    "frustration": 0,
+    "responseTime": 16510,
+    "firstInteractionTime": 2309,
+    "timestamp": "2026-01-28T22:52:01.464Z",
+    "unixTimestamps": {
+      "trialStart": 1769640704954,
+      "firstInteraction": 1769640707263,
+      "submit": 1769640721464
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "trial": "PAUSE",
+    "type": "BREAK",
+    "startBlock": "LOW",
+    "lastBlockCompleted": "LOW",
+    "lowDone": true,
+    "highDone": false,
+    "totalResponseTime": 1362,
+    "timestamp": "2026-01-28T22:52:03.349Z"
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H1",
+    "trialType": "HIGH",
+    "taskDescription": "Cloud growth tracking - Adriatic Sea",
+    "answer": "A",
+    "correct": true,
+    "correctKey": "A",
+    "responseTime": 25322,
+    "firstSelectionTime": 24388,
+    "imagesViewed": 7,
+    "uniqueImagesViewed": 7,
+    "imageViewSequence": [
+      {
+        "mode": "static",
+        "time": "21:00",
+        "index": 0,
+        "src": "img/kompozit_20260125_2100.png",
+        "timestamp": 3
+      },
+      {
+        "mode": "static",
+        "time": "22:00",
+        "index": 1,
+        "src": "img/kompozit_20260125_2200.png",
+        "timestamp": 14838
+      },
+      {
+        "mode": "static",
+        "time": "23:00",
+        "index": 2,
+        "src": "img/kompozit_20260125_2300.png",
+        "timestamp": 16937
+      },
+      {
+        "mode": "static",
+        "time": "00:00",
+        "index": 3,
+        "src": "img/kompozit_20260126_0000.png",
+        "timestamp": 18554
+      },
+      {
+        "mode": "static",
+        "time": "01:00",
+        "index": 4,
+        "src": "img/kompozit_20260126_0100.png",
+        "timestamp": 20221
+      },
+      {
+        "mode": "static",
+        "time": "02:00",
+        "index": 5,
+        "src": "img/kompozit_20260126_0200.png",
+        "timestamp": 21321
+      },
+      {
+        "mode": "static",
+        "time": "03:00",
+        "index": 6,
+        "src": "img/kompozit_20260126_0300.png",
+        "timestamp": 22288
+      }
+    ],
+    "timestamp": "2026-01-28T22:52:28.699Z",
+    "unixTimestamps": {
+      "trialStart": 1769640723376,
+      "imageLoaded": 1769640723379,
+      "firstImageChange": 1769640738214,
+      "firstSelection": 1769640747764,
+      "submit": 1769640748699
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H2a",
+    "trialType": "HIGH",
+    "taskDescription": "Temporal tracking - Adriatic cloud onset",
+    "question": {
+      "id": "q1",
+      "answer": "F",
+      "correct": true,
+      "correctKey": "F",
+      "responseTime": 32862
+    },
+    "totalResponseTime": 33613,
+    "imagesViewed": 16,
+    "uniqueImagesViewed": 14,
+    "imageViewSequence": [
+      {
+        "mode": "static",
+        "time": "18:00",
+        "index": 0,
+        "src": "img/kompozit_20260125_1800.png",
+        "timestamp": 3
+      },
+      {
+        "mode": "static",
+        "time": "18:00",
+        "index": 0,
+        "src": "img/kompozit_20260125_1800.png",
+        "timestamp": 9695
+      },
+      {
+        "mode": "static",
+        "time": "19:00",
+        "index": 1,
+        "src": "img/kompozit_20260125_1900.png",
+        "timestamp": 10211
+      },
+      {
+        "mode": "static",
+        "time": "20:00",
+        "index": 2,
+        "src": "img/kompozit_20260125_2000.png",
+        "timestamp": 11578
+      },
+      {
+        "mode": "static",
+        "time": "21:00",
+        "index": 3,
+        "src": "img/kompozit_20260125_2100.png",
+        "timestamp": 14312
+      },
+      {
+        "mode": "static",
+        "time": "22:00",
+        "index": 4,
+        "src": "img/kompozit_20260125_2200.png",
+        "timestamp": 15563
+      },
+      {
+        "mode": "static",
+        "time": "23:00",
+        "index": 5,
+        "src": "img/kompozit_20260125_2300.png",
+        "timestamp": 16395
+      },
+      {
+        "mode": "static",
+        "time": "00:00",
+        "index": 6,
+        "src": "img/kompozit_20260126_0000.png",
+        "timestamp": 16845
+      },
+      {
+        "mode": "static",
+        "time": "08:00",
+        "index": 14,
+        "src": "img/kompozit_20260126_0800.png",
+        "timestamp": 17712
+      },
+      {
+        "mode": "static",
+        "time": "07:00",
+        "index": 13,
+        "src": "img/kompozit_20260126_0700.png",
+        "timestamp": 18412
+      },
+      {
+        "mode": "static",
+        "time": "05:00",
+        "index": 11,
+        "src": "img/kompozit_20260126_0500.png",
+        "timestamp": 19345
+      },
+      {
+        "mode": "static",
+        "time": "04:00",
+        "index": 10,
+        "src": "img/kompozit_20260126_0400.png",
+        "timestamp": 20611
+      },
+      {
+        "mode": "static",
+        "time": "03:00",
+        "index": 9,
+        "src": "img/kompozit_20260126_0300.png",
+        "timestamp": 21345
+      },
+      {
+        "mode": "static",
+        "time": "08:00",
+        "index": 14,
+        "src": "img/kompozit_20260126_0800.png",
+        "timestamp": 22678
+      },
+      {
+        "mode": "static",
+        "time": "09:00",
+        "index": 15,
+        "src": "img/kompozit_20260126_0900.png",
+        "timestamp": 23362
+      },
+      {
+        "mode": "static",
+        "time": "10:00",
+        "index": 16,
+        "src": "img/kompozit_20260126_1000.png",
+        "timestamp": 26478
+      }
+    ],
+    "timestamp": "2026-01-28T22:53:02.832Z",
+    "unixTimestamps": {
+      "trialStart": 1769640749219,
+      "imageLoaded": 1769640749222,
+      "firstImageChange": 1769640758914,
+      "firstSelection": 1769640782081,
+      "submit": 1769640782832
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H2b",
+    "trialType": "HIGH",
+    "taskDescription": "Spatial comparison - Osijek vs Zadar precipitation",
+    "question": {
+      "id": "q2",
+      "answer": "A",
+      "correct": true,
+      "correctKey": "A",
+      "responseTime": 22373
+    },
+    "totalResponseTime": 23274,
+    "imagesViewed": 16,
+    "uniqueImagesViewed": 16,
+    "imageViewSequence": [
+      {
+        "mode": "static",
+        "time": "18:00",
+        "index": 0,
+        "src": "img/kompozit_20260125_1800.png",
+        "timestamp": 6
+      },
+      {
+        "mode": "static",
+        "time": "19:00",
+        "index": 1,
+        "src": "img/kompozit_20260125_1900.png",
+        "timestamp": 7973
+      },
+      {
+        "mode": "static",
+        "time": "20:00",
+        "index": 2,
+        "src": "img/kompozit_20260125_2000.png",
+        "timestamp": 9173
+      },
+      {
+        "mode": "static",
+        "time": "21:00",
+        "index": 3,
+        "src": "img/kompozit_20260125_2100.png",
+        "timestamp": 10006
+      },
+      {
+        "mode": "static",
+        "time": "22:00",
+        "index": 4,
+        "src": "img/kompozit_20260125_2200.png",
+        "timestamp": 11190
+      },
+      {
+        "mode": "static",
+        "time": "23:00",
+        "index": 5,
+        "src": "img/kompozit_20260125_2300.png",
+        "timestamp": 11790
+      },
+      {
+        "mode": "static",
+        "time": "00:00",
+        "index": 6,
+        "src": "img/kompozit_20260126_0000.png",
+        "timestamp": 12373
+      },
+      {
+        "mode": "static",
+        "time": "01:00",
+        "index": 7,
+        "src": "img/kompozit_20260126_0100.png",
+        "timestamp": 14290
+      },
+      {
+        "mode": "static",
+        "time": "02:00",
+        "index": 8,
+        "src": "img/kompozit_20260126_0200.png",
+        "timestamp": 15189
+      },
+      {
+        "mode": "static",
+        "time": "03:00",
+        "index": 9,
+        "src": "img/kompozit_20260126_0300.png",
+        "timestamp": 17106
+      },
+      {
+        "mode": "static",
+        "time": "04:00",
+        "index": 10,
+        "src": "img/kompozit_20260126_0400.png",
+        "timestamp": 17473
+      },
+      {
+        "mode": "static",
+        "time": "05:00",
+        "index": 11,
+        "src": "img/kompozit_20260126_0500.png",
+        "timestamp": 18223
+      },
+      {
+        "mode": "static",
+        "time": "06:00",
+        "index": 12,
+        "src": "img/kompozit_20260126_0600.png",
+        "timestamp": 19373
+      },
+      {
+        "mode": "static",
+        "time": "08:00",
+        "index": 14,
+        "src": "img/kompozit_20260126_0800.png",
+        "timestamp": 19723
+      },
+      {
+        "mode": "static",
+        "time": "09:00",
+        "index": 15,
+        "src": "img/kompozit_20260126_0900.png",
+        "timestamp": 20656
+      },
+      {
+        "mode": "static",
+        "time": "10:00",
+        "index": 16,
+        "src": "img/kompozit_20260126_1000.png",
+        "timestamp": 21189
+      }
+    ],
+    "timestamp": "2026-01-28T22:53:26.632Z",
+    "unixTimestamps": {
+      "trialStart": 1769640783358,
+      "imageLoaded": 1769640783364,
+      "firstImageChange": 1769640791331,
+      "firstSelection": 1769640805731,
+      "submit": 1769640806632
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H3a",
+    "trialType": "HIGH",
+    "taskDescription": "Dual-task audio instruction - digit sequence",
+    "audioFile": "audio/h3_7395.m4a",
+    "audioStart": 1825,
+    "audioEnd": 7455,
+    "audioDuration": 5630,
+    "digitSequence": "7-3-9-5",
+    "timestamp": "2026-01-28T22:53:34.612Z",
+    "unixTimestamps": {
+      "trialStart": 1769640807157,
+      "audioStart": 1769640808982,
+      "audioEnd": 1769640814612,
+      "submit": 1769640814613
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H3b",
+    "trialType": "HIGH",
+    "taskDescription": "Dual-task temporal search with digit recall",
+    "timeout": false,
+    "timeLimitSeconds": 60,
+    "timeRemaining": 5,
+    "answer": "A",
+    "correct": true,
+    "correctKey": "A",
+    "firstAnswerTime": 54114,
+    "totalResponseTime": 55198,
+    "imagesViewed": 26,
+    "uniqueImagesViewed": 24,
+    "imageViewSequence": [
+      {
+        "mode": "static",
+        "time": "17",
+        "index": 0,
+        "src": "img/kompozit_20260125_1700.png",
+        "timestamp": 2
+      },
+      {
+        "mode": "static",
+        "time": "18",
+        "index": 1,
+        "src": "img/kompozit_20260125_1800.png",
+        "timestamp": 23397
+      },
+      {
+        "mode": "static",
+        "time": "19",
+        "index": 2,
+        "src": "img/kompozit_20260125_1900.png",
+        "timestamp": 25447
+      },
+      {
+        "mode": "static",
+        "time": "19",
+        "index": 2,
+        "src": "img/kompozit_20260125_1900.png",
+        "timestamp": 27097
+      },
+      {
+        "mode": "static",
+        "time": "20",
+        "index": 3,
+        "src": "img/kompozit_20260125_2000.png",
+        "timestamp": 28347
+      },
+      {
+        "mode": "static",
+        "time": "21",
+        "index": 4,
+        "src": "img/kompozit_20260125_2100.png",
+        "timestamp": 29813
+      },
+      {
+        "mode": "static",
+        "time": "22",
+        "index": 5,
+        "src": "img/kompozit_20260125_2200.png",
+        "timestamp": 31546
+      },
+      {
+        "mode": "static",
+        "time": "23",
+        "index": 6,
+        "src": "img/kompozit_20260125_2300.png",
+        "timestamp": 32813
+      },
+      {
+        "mode": "static",
+        "time": "00",
+        "index": 7,
+        "src": "img/kompozit_20260126_0000.png",
+        "timestamp": 34296
+      },
+      {
+        "mode": "static",
+        "time": "01",
+        "index": 8,
+        "src": "img/kompozit_20260126_0100.png",
+        "timestamp": 35514
+      },
+      {
+        "mode": "static",
+        "time": "02",
+        "index": 9,
+        "src": "img/kompozit_20260126_0200.png",
+        "timestamp": 36780
+      },
+      {
+        "mode": "static",
+        "time": "03",
+        "index": 10,
+        "src": "img/kompozit_20260126_0300.png",
+        "timestamp": 37663
+      },
+      {
+        "mode": "static",
+        "time": "04",
+        "index": 11,
+        "src": "img/kompozit_20260126_0400.png",
+        "timestamp": 38880
+      },
+      {
+        "mode": "static",
+        "time": "05",
+        "index": 12,
+        "src": "img/kompozit_20260126_0500.png",
+        "timestamp": 40080
+      },
+      {
+        "mode": "static",
+        "time": "06",
+        "index": 13,
+        "src": "img/kompozit_20260126_0600.png",
+        "timestamp": 41797
+      },
+      {
+        "mode": "static",
+        "time": "07",
+        "index": 14,
+        "src": "img/kompozit_20260126_0700.png",
+        "timestamp": 43163
+      },
+      {
+        "mode": "static",
+        "time": "08",
+        "index": 15,
+        "src": "img/kompozit_20260126_0800.png",
+        "timestamp": 43913
+      },
+      {
+        "mode": "static",
+        "time": "09",
+        "index": 16,
+        "src": "img/kompozit_20260126_0900.png",
+        "timestamp": 45063
+      },
+      {
+        "mode": "static",
+        "time": "10",
+        "index": 17,
+        "src": "img/kompozit_20260126_1000.png",
+        "timestamp": 45830
+      },
+      {
+        "mode": "static",
+        "time": "11",
+        "index": 18,
+        "src": "img/kompozit_20260126_1100.png",
+        "timestamp": 47130
+      },
+      {
+        "mode": "static",
+        "time": "12",
+        "index": 19,
+        "src": "img/kompozit_20260126_1200.png",
+        "timestamp": 47563
+      },
+      {
+        "mode": "static",
+        "time": "13",
+        "index": 20,
+        "src": "img/kompozit_20260126_1300.png",
+        "timestamp": 48546
+      },
+      {
+        "mode": "static",
+        "time": "14",
+        "index": 21,
+        "src": "img/kompozit_20260126_1400.png",
+        "timestamp": 49363
+      },
+      {
+        "mode": "static",
+        "time": "15",
+        "index": 22,
+        "src": "img/kompozit_20260126_1500.png",
+        "timestamp": 50213
+      },
+      {
+        "mode": "static",
+        "time": "16",
+        "index": 23,
+        "src": "img/kompozit_20260126_1600.png",
+        "timestamp": 50597
+      },
+      {
+        "mode": "static",
+        "time": "17",
+        "index": 0,
+        "src": "img/kompozit_20260125_1700.png",
+        "timestamp": 52080
+      }
+    ],
+    "timestamp": "2026-01-28T22:54:31.833Z",
+    "unixTimestamps": {
+      "trialStart": 1769640816635,
+      "timerStart": 1769640816638,
+      "imageLoaded": 1769640816637,
+      "firstImageChange": 1769640840032,
+      "firstAnswer": 1769640870749,
+      "submit": 1769640871833
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H3c",
+    "trialType": "HIGH",
+    "taskDescription": "Dual-task digit recall",
+    "recall": {
+      "entered": "7-3-9-5",
+      "enteredArray": [
+        "7",
+        "3",
+        "9",
+        "5"
+      ],
+      "correctArray": [
+        "7",
+        "3",
+        "9",
+        "5"
+      ],
+      "perDigitCorrect": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "correctCount": 4,
+      "fullyCorrect": true,
+      "firstInputTime": 2045
+    },
+    "totalResponseTime": 4760,
+    "timestamp": "2026-01-28T22:54:37.116Z",
+    "unixTimestamps": {
+      "trialStart": 1769640872356,
+      "firstInput": 1769640874401,
+      "submit": 1769640877116
+    }
+  },
+  {
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "startBlock": "LOW",
+    "trial": "H3c",
+    "type": "NASA_TLX",
+    "tlxBlock": "HIGH",
+    "mentalDemand": 9,
+    "physicalDemand": 0,
+    "temporalDemand": 2,
+    "performance": 6,
+    "effort": 7,
+    "frustration": 0,
+    "responseTime": 20730,
+    "firstInteractionTime": 3912,
+    "timestamp": "2026-01-28T22:54:57.866Z",
+    "unixTimestamps": {
+      "trialStart": 1769640877136,
+      "firstInteraction": 1769640881048,
+      "submit": 1769640897866
+    }
+  },
+  {
+    "trial": "END_MAIN",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "totalResponseTime": 2512,
+    "timestamp": "2026-01-28T22:55:00.917Z"
+  },
+  {
+    "trial": "SOCIODEMO",
+    "type": "QUESTIONNAIRE",
+    "trialGroupId": "TG_1769640656174_04f4790c3e926",
+    "participantId": "P008",
+    "participantCode": "FI10DO",
+    "startBlock": "LOW",
+    "q1": "Da",
+    "q2": "Da, imam 18 godina ili više",
+    "q3": "Muško",
+    "q4": 50,
+    "q5": "Doktorski studij",
+    "q6": "Društvene znanosti",
+    "q7": "Vrlo često (više sati dnevno)",
+    "q8": "Vrlo visoka",
+    "q9": "Svakodnevno",
+    "q10": "Povremeno (nekoliko puta mjesečno)",
+    "q11": "Osrednje",
+    "q12": "Naočale",
+    "q13": "Zadovoljavajuća",
+    "q14": "Ne",
+    "q15": "Ne",
+    "totalResponseTime": 90528,
+    "timestamp": "2026-01-28T22:56:31.719Z"
+  }
+]
