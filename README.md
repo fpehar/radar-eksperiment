@@ -1,10 +1,15 @@
 # Što je na radaru?
-radna verzija ET eksperimenta na temelju radarskih slika
+- radna verzija ET eksperimenta na temelju radarskih slika
+- "Što je na radaru? ..." može biti i catchy naslov članka, npr.
+  - What’s on the Radar? Eye-Tracking Evidence of Cognitive Flexibility in Dynamic Weather Visualizations
+  - What’s on the Radar? Cognitive Flexibility and Visual Attention in Interpreting Meteorological Displays
+  - What’s on the Radar? Rule Switching and Cognitive Flexibility in Meteorological Map Reading
 
 ## Kako pokrenuti
 - koristiti index.html za ulaz u eksperiment
 - završava s kraj.html
 - logika se razlikuje kod onih koji su započeli s Low i High zadacima
+
 
 # Kako izgleda flow
 ```
