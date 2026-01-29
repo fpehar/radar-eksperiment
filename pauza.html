@@ -47,6 +47,13 @@
       white-space: pre-line;
     }
 
+    .sub{
+      font-size: 13px;
+      color: #7f8c8d;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
     .submit-button{
       padding: 12px 30px;
       background-color: #3498db;
@@ -75,14 +82,18 @@
   </style>
 </head>
 <body>
+
   <div class="card">
     <div class="title">Pauza</div>
+
     <div class="message">
-Slijedi drugi dio istraživanja.
-Uzmite kratku pauzu i nastavite kada budete spremni.
+Slijedi nova skupina zadataka.<br />
+Napravite kratku pauzu, a nastavak slijedi automatski nakon 60 sekundi.
     </div>
-    <button type="button" class="submit-button" id="continueBtn" onclick="continueNext()">
-      Nastavi
+
+    <!-- Namjerno onemogućeno: nema klika prije 60 s -->
+    <button type="button" class="submit-button" id="continueBtn" disabled aria-disabled="true">
+      Molimo pričekajte ...
     </button>
   </div>
 
@@ -90,33 +101,38 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
     const SCREEN_START = Date.now();
     console.log('SCREEN_START_PAUSE:', SCREEN_START);
 
-    // DOHVATI SVE ID-EVE
-    const participantId = localStorage.getItem('participantId');
-    const participantCode = localStorage.getItem('participantCode');
-    const trialGroupId = localStorage.getItem('trialGroupId');
+    const participantId   = localStorage.getItem('participantId') || null;
+    const participantCode = localStorage.getItem('participantCode') || null;
+    const trialGroupId    = localStorage.getItem('trialGroupId') || null;
+    const startBlock      = localStorage.getItem('startBlock') || null;
 
-    console.log('TRIAL_GROUP_ID_PAUSE:', trialGroupId);
-
-    // PROVJERA
-    if (!participantId || !trialGroupId) {
-      alert('Nedostaju podaci o identifikaciji. Bit ćete preusmjereni na početak.');
-      window.location.href = 'index.html';
-    }
+    console.log('IDS_PAUSE:', { participantId, participantCode, trialGroupId, startBlock });
 
     // Ako su oba bloka završena, odmah ide kraj istraživanja
     (function redirectIfFinished() {
       const lowDone  = localStorage.getItem('lowDone') === '1';
       const highDone = localStorage.getItem('highDone') === '1';
-
       if (lowDone && highDone) {
         window.location.href = 'kraj.html';
       }
     })();
 
-    function continueNext() {
+    let hasContinued = false;
+    const AUTO_MS = 60000;
+
+    // Auto-nastavak točno nakon 60 s (bez iznimke)
+    const autoTimer = setTimeout(() => {
+      continueNext(true);
+    }, AUTO_MS);
+
+    function continueNext(isAuto = false) {
+      if (hasContinued) return;
+      hasContinued = true;
+      clearTimeout(autoTimer);
+
       const btn = document.getElementById('continueBtn');
       btn.disabled = true;
-      btn.textContent = "Nastavljam...";
+      btn.textContent = "Nastavak...";
       btn.classList.add('success');
 
       const responseTime = Date.now() - SCREEN_START;
@@ -124,26 +140,17 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
       const lowDone  = localStorage.getItem('lowDone') === '1';
       const highDone = localStorage.getItem('highDone') === '1';
       const last = localStorage.getItem('lastBlockCompleted') || null;
-      const startBlock = localStorage.getItem('startBlock') || null;
 
-      // KOMPLETAN DATA OBJECT
       const data = {
-        // Identifikatori
-        participantId: participantId,
-        participantCode: participantCode,
-        trialGroupId: trialGroupId,
-        
-        // Trial info
+        participantId,
+        participantCode,
+        trialGroupId,
         trial: 'PAUSE',
         type: 'BREAK',
-        
-        // Status
-        startBlock: startBlock,
+        startBlock,
         lastBlockCompleted: last,
-        lowDone: lowDone,
-        highDone: highDone,
-        
-        // Timing
+        lowDone,
+        highDone,
         totalResponseTime: responseTime,
         timestamp: new Date().toISOString()
       };
@@ -166,7 +173,7 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
         localStorage.setItem('experimentData', JSON.stringify([data]));
       }
 
-      // Ako su oba bloka gotova -> kraj
+      // Ako je nakon pauze sve gotovo
       if (lowDone && highDone) {
         window.location.href = 'kraj.html';
         return;
@@ -178,25 +185,19 @@ Uzmite kratku pauzu i nastavite kada budete spremni.
       } else if (last === 'HIGH') {
         window.location.href = 'radar_L1.html';
       } else {
-        // FALLBACK: INVERTIRAJ startBlock (ne ponavljaj isti!)
-        if (startBlock === 'LOW') {
-          window.location.href = 'radar_H1.html';  // LOW završen → idi na HIGH
-        } else if (startBlock === 'HIGH') {
-          window.location.href = 'radar_L1.html';  // HIGH završen → idi na LOW
-        } else {
-          window.location.href = 'index.html';
-        }
+        // fallback po startBlock
+        if (startBlock === 'LOW') window.location.href = 'radar_H1.html';
+        else if (startBlock === 'HIGH') window.location.href = 'radar_L1.html';
+        else window.location.href = 'index.html';
       }
     }
 
-    // Enter = Nastavi
+    // Blokiraj Enter (nema manualnog nastavka)
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
-        const btn = document.getElementById('continueBtn');
-        if (!btn.disabled) btn.click();
+        e.preventDefault();
       }
     });
   </script>
 </body>
-
 </html>
