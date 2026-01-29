@@ -87,24 +87,29 @@
     <div class="kicker">Završetak glavnog dijela</div>
 
     <div class="message">
-Završili ste glavni dio istraživanja.
-
+Završili ste sve zadatke.<br />
 Hvala vam na sudjelovanju i uloženom vremenu.
     </div>
 
     <div class="sub">
-Prije konačnog završetka, molimo vas da ispunite još kratak završni upitnik.
-Upitnik se odnosi na opće podatke i vaše iskustvo.
+Prije konačnog završetka, molimo vas da ispunite još kratak završni upitnik. 
+Pitanja se odnose na osnovne podatke i vaše iskustvo sudjelovanja.
     </div>
 
     <button type="button" class="btn" id="continueBtn" onclick="goToQuestionnaire()">
-      Nastavi na završni upitnik
+      Nastavi na upitnik
     </button>
   </div>
 
   <script>
     const SCREEN_START = Date.now();
+    console.log('SCREEN_START_kraj:', SCREEN_START);
+
+    // DOHVATI SVE ID-EVE
+    const participantId = localStorage.getItem('participantId') || null;
+    const participantCode = localStorage.getItem('participantCode') || null;
     const trialGroupId = localStorage.getItem('trialGroupId') || null;
+    const startBlock = localStorage.getItem('startBlock') || null;
 
     function appendExperimentData(entry) {
       try {
@@ -128,13 +133,31 @@ Upitnik se odnosi na opće podatke i vaše iskustvo.
       btn.textContent = "Učitavam...";
       btn.classList.add('success');
 
-      // Zabilježi "end-of-main" marker (bez exporta)
-      appendExperimentData({
-        trial: 'END_MAIN',
+      // Zabilježi "end-of-main" marker
+      const data = {
+        // Identifikatori
+        participantId: participantId,
+        participantCode: participantCode,
         trialGroupId: trialGroupId,
+        startBlock: startBlock,
+
+        // Trial info
+        trial: 'END_MAIN',
+        type: 'TRANSITION',
+
+        // Timing
         totalResponseTime: Date.now() - SCREEN_START,
-        timestamp: new Date().toISOString()
-      });
+        timestamp: new Date().toISOString(),
+
+        // Unix timestamps
+        unixTimestamps: {
+          screenStart: SCREEN_START,
+          submit: Date.now()
+        }
+      };
+
+      appendExperimentData(data);
+      console.log('END_MAIN spremljen:', data);
 
       setTimeout(() => {
         window.location.href = 'upitnik.html';
