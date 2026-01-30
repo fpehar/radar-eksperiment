@@ -499,15 +499,7 @@ kao sudionika te dajete svoj informirani pristanak za sudjelovanje u istraživan
     input.addEventListener('change', trackFirstInteraction);
   });
 
-  // ===== PROGRESS =====
-  function updateProgress() {
-    const q1 = document.querySelector('input[name="q1"]:checked');
-    const q2 = document.querySelector('input[name="q2"]:checked');
-
-    const answered = (q1 ? 1 : 0) + (q2 ? 1 : 0);
-    document.getElementById('progress').textContent = `Odgovoreno ${answered}/2`;
-    document.getElementById('submitBtn').disabled = (answered !== 2);
-  }
+  
 
   // Bindings
   ['q1', 'q2'].forEach(name => {
